@@ -1,20 +1,17 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
-import SessionsScreen from "../screens/sessions/SessionsIndex";
-
+import { createStackNavigator } from "@react-navigation/stack";
 import SessionsList from "@/app/screens/sessions/SessionsList";
 import SessionForm from "@/app/screens/sessions/SessionsForm";
-import { createStackNavigator } from "@react-navigation/stack";
 
 const Stack = createStackNavigator();
 
-export default function SessionsTab() {
+export default function SessionsStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="SessionsList"
         component={SessionsList}
-        options={{ headerShown: false }}
+        options={{ title: "Sessions" }}
       />
       <Stack.Screen
         name="SessionForm"
@@ -24,9 +21,3 @@ export default function SessionsTab() {
     </Stack.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

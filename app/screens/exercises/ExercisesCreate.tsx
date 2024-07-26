@@ -2,7 +2,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
 
-export default function SessionsScreen() {
+export default function SessionsIndexScreen() {
   // Exemple de données de séances
   const sessions = [
     { id: "1", name: "Séance 1" },
