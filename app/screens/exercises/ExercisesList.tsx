@@ -29,11 +29,16 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   const handleEdit = (exerciseId: number) => {
-    navigation.navigate("screens/exercises/ExerciseEdit", { exerciseId });
+    const exercise = exercises.find((e) => e.id === exerciseId);
+    if (exercise) {
+      navigation.navigate("screens/exercises/ExerciseEdit", {
+        exerciseId: exercise.id,
+      });
+    }
   };
 
   const handleAdd = () => {
-    navigation.navigate("screens/exercises/ExerciseForm", {});
+    navigation.navigate("screens/exercises/ExerciseCreate", {});
   };
 
   const handleDelete = (exerciseId: number) => {
@@ -41,11 +46,13 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
     // Implémentez la logique de suppression ici
   };
 
-  // Fonction pour créer un exercice à partir d'un existant
   const handleCreateFrom = (exerciseId: number) => {
-    console.log("Create from", exerciseId);
-    // Implémentez la logique pour créer un exercice basé sur l'existant ici
-    navigation.navigate("ExerciseEdit", { createFromId: exerciseId });
+    const exercise = exercises.find((e) => e.id === exerciseId);
+    if (exercise) {
+      navigation.navigate("screens/exercises/ExerciseCreateFrom", {
+        createFromExercise: exercise,
+      });
+    }
   };
 
   const renderItem = ({ item }: { item: Exercise }) => (

@@ -1,4 +1,3 @@
-// ExerciseForm.tsx
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -13,8 +12,8 @@ import Slider from "@react-native-community/slider";
 import { Exercise } from "@/types/ExerciseTypes";
 
 interface ExerciseFormProps {
-  exercise?: Exercise; // Pour l'édition, un exercice peut être passé en prop
-  onSave: (exercise: Exercise) => void; // Fonction appelée lors de la sauvegarde
+  exercise?: Exercise;
+  onSave: (exercise: Exercise) => void;
 }
 
 const ExerciseForm: React.FC<ExerciseFormProps> = ({ exercise, onSave }) => {
@@ -30,7 +29,6 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ exercise, onSave }) => {
 
   useEffect(() => {
     if (exercise) {
-      // Si un exercice est passé en prop, initialiser les valeurs
       setTitle(exercise.title);
       setDescription(exercise.description);
       setCategory(exercise.category);
@@ -42,8 +40,13 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ exercise, onSave }) => {
     }
   }, [exercise]);
 
-  const handleNext = () => setCurrentStep((prev) => prev + 1);
-  const handleBack = () => setCurrentStep((prev) => prev - 1);
+  const handleNext = () => {
+    if (currentStep < 3) setCurrentStep((prev) => prev + 1);
+  };
+
+  const handleBack = () => {
+    if (currentStep > 1) setCurrentStep((prev) => prev - 1);
+  };
 
   const handleSave = () => {
     const newExercise: Exercise = {
@@ -54,14 +57,14 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ exercise, onSave }) => {
       restTime,
       duration: { start: durationStart, end: durationEnd },
       intensity,
-      id: exercise ? exercise.id : Date.now(), // Utilise l'ID existant pour l'édition, sinon génère un nouveau ID
+      id: exercise ? exercise.id : Date.now(),
     };
 
-    onSave(newExercise); // Appelle la fonction de sauvegarde passée en prop
+    onSave(newExercise);
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       {currentStep === 1 && (
         <View style={styles.stepContainer}>
           <TextInput
@@ -92,57 +95,49 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ exercise, onSave }) => {
       )}
       {currentStep === 2 && (
         <View style={styles.stepContainer}>
-          <View style={styles.sliderContainer}>
-            <Text style={styles.sliderLabel}>Repetitions:</Text>
-            <Slider
-              style={styles.slider}
-              minimumValue={1}
-              maximumValue={100}
-              step={1}
-              value={repetitions}
-              onValueChange={setRepetitions}
-            />
-            <Text style={styles.sliderValue}>{repetitions}</Text>
-          </View>
+          <Text>Repetitions:</Text>
+          <Slider
+            style={styles.slider}
+            minimumValue={1}
+            maximumValue={100}
+            step={1}
+            value={repetitions}
+            onValueChange={setRepetitions}
+          />
+          <Text>{repetitions}</Text>
 
-          <View style={styles.sliderContainer}>
-            <Text style={styles.sliderLabel}>Rest Time (seconds):</Text>
-            <Slider
-              style={styles.slider}
-              minimumValue={0}
-              maximumValue={60}
-              step={1}
-              value={restTime}
-              onValueChange={setRestTime}
-            />
-            <Text style={styles.sliderValue}>{restTime}</Text>
-          </View>
+          <Text>Rest Time (seconds):</Text>
+          <Slider
+            style={styles.slider}
+            minimumValue={0}
+            maximumValue={60}
+            step={1}
+            value={restTime}
+            onValueChange={setRestTime}
+          />
+          <Text>{restTime}</Text>
 
-          <View style={styles.sliderContainer}>
-            <Text style={styles.sliderLabel}>Duration Start (seconds):</Text>
-            <Slider
-              style={styles.slider}
-              minimumValue={0}
-              maximumValue={60}
-              step={1}
-              value={durationStart}
-              onValueChange={setDurationStart}
-            />
-            <Text style={styles.sliderValue}>{durationStart}</Text>
-          </View>
+          <Text>Duration Start (seconds):</Text>
+          <Slider
+            style={styles.slider}
+            minimumValue={0}
+            maximumValue={60}
+            step={1}
+            value={durationStart}
+            onValueChange={setDurationStart}
+          />
+          <Text>{durationStart}</Text>
 
-          <View style={styles.sliderContainer}>
-            <Text style={styles.sliderLabel}>Duration End (seconds):</Text>
-            <Slider
-              style={styles.slider}
-              minimumValue={0}
-              maximumValue={60}
-              step={1}
-              value={durationEnd}
-              onValueChange={setDurationEnd}
-            />
-            <Text style={styles.sliderValue}>{durationEnd}</Text>
-          </View>
+          <Text>Duration End (seconds):</Text>
+          <Slider
+            style={styles.slider}
+            minimumValue={0}
+            maximumValue={60}
+            step={1}
+            value={durationEnd}
+            onValueChange={setDurationEnd}
+          />
+          <Text>{durationEnd}</Text>
 
           <View style={styles.buttonContainer}>
             <Button title="Back" onPress={handleBack} />
@@ -175,12 +170,17 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ exercise, onSave }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 16,
+    backgroundColor: "#f5f5f5",
   },
   stepContainer: {
     flex: 1,
     padding: 16,
+    backgroundColor: "white",
+    borderRadius: 8,
+    marginBottom: 16,
+    elevation: 1,
   },
   input: {
     borderBottomWidth: 1,
@@ -188,30 +188,16 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingVertical: 8,
     paddingHorizontal: 4,
+    width: "100%", // Assure que le champ de texte utilise toute la largeur disponible
   },
   picker: {
     height: 50,
-    width: "100%",
+    width: "100%", // Assure que le picker utilise toute la largeur disponible
     marginBottom: 16,
-  },
-  sliderContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  sliderLabel: {
-    width: 150,
-    fontSize: 16,
-    marginRight: 8,
   },
   slider: {
-    flex: 1,
-    marginHorizontal: 8,
-  },
-  sliderValue: {
-    width: 50,
-    textAlign: "center",
-    fontSize: 16,
+    width: "100%", // Assure que le slider utilise toute la largeur disponible
+    marginVertical: 8,
   },
   header: {
     fontSize: 18,

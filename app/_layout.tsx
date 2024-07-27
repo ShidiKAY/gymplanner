@@ -43,6 +43,18 @@ export default function RootLayout() {
           name="screens/exercises/ExerciseDetail"
           options={{ title: "Detail d'un exercice" }}
         />
+        <Stack.Screen
+          name="screens/exercises/ExerciseCreate"
+          options={{ title: "Creer un exercice" }}
+        />
+        <Stack.Screen
+          name="screens/exercises/ExerciseEdit"
+          options={{ title: "Modifier un exercice" }}
+        />
+        <Stack.Screen
+          name="screens/exercises/ExerciseCreateFrom"
+          options={{ title: "Copier un exercice" }}
+        />
       </Stack>
     </ThemeProvider>
   );
