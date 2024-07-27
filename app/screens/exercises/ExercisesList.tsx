@@ -29,11 +29,11 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   const handleEdit = (exerciseId: number) => {
-    navigation.navigate("ExerciseEdit", { exerciseId });
+    navigation.navigate("screens/exercises/ExerciseEdit", { exerciseId });
   };
 
   const handleAdd = () => {
-    navigation.navigate("ExerciseEdit");
+    navigation.navigate("screens/exercises/ExerciseForm", {});
   };
 
   const handleDelete = (exerciseId: number) => {

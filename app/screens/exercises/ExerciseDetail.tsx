@@ -56,6 +56,8 @@ const ExerciseDetail: React.FC = () => {
     // Sélectionner l'URL d'affichage en fonction des erreurs
     const displayUri = uri && imageErrors.has(uri) ? placeholder : uri;
 
+    console.log("ppp " + placeholder);
+    console.log("ddd " + uri);
     return uri && imageErrors.has(uri) ? (
       <View style={styles.imagePlaceholder}>
         <Text style={styles.imagePlaceholderText}>Image non disponible</Text>
@@ -81,7 +83,8 @@ const ExerciseDetail: React.FC = () => {
         exercise.videoLinks.map((video) => (
           <View key={video.url} style={styles.videoLink}>
             {renderImage(
-              video.thumbnail || getDefaultThumbnailUrl(video.url),
+              // video.thumbnail ||
+              getDefaultThumbnailUrl(video.url),
               true
             )}
             <Text>{video.url}</Text>
