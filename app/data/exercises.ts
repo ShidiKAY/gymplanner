@@ -15,10 +15,11 @@ export const exercises: Exercise[] = [
       end: 60,
     },
     restTime: 30,
-    thumbnail: "https://example.com/pushup-thumbnail.jpg",
+    thumbnail:
+      "https://cdn.mos.cms.futurecdn.net/oYDbf5hQAePHEBNZTQMXRA-1200-80.jpg",
     videoLinks: [
       {
-        url: "https://www.youtube.com/watch?v=example",
+        url: "https://www.youtube.com/watch?v=IODxDxX7oi4",
         thumbnail: "https://example.com/video-thumbnail.jpg",
         startTime: 0,
       },
@@ -105,6 +106,251 @@ export const exercises: Exercise[] = [
         title: "Side Plank",
         intensity: 3,
         repetitions: 1,
+      },
+    ],
+  },
+  {
+    id: 4,
+    title: "Lunges",
+    description: "A basic lunge exercise.",
+    category: "Strength",
+    intensity: 3,
+    repetitions: 12,
+    duration: {
+      start: 0,
+      end: 60,
+    },
+    restTime: 30,
+    thumbnail: "https://example.com/lunges-thumbnail.jpg",
+    videoLinks: [
+      {
+        url: "https://www.youtube.com/watch?v=example4",
+        thumbnail: "https://example.com/video-thumbnail4.jpg",
+        startTime: 0,
+      },
+    ],
+    notes: [
+      {
+        title: "Form",
+        content: "Keep your knee behind your toes.",
+      },
+    ],
+    variants: [
+      {
+        id: 4,
+        title: "Reverse Lunge",
+        intensity: 3,
+        repetitions: 12,
+      },
+    ],
+  },
+  {
+    id: 5,
+    title: "Burpees",
+    description: "A full-body exercise combining a squat, jump, and push-up.",
+    category: "Cardio",
+    intensity: 5,
+    repetitions: 15,
+    duration: {
+      start: 0,
+      end: 90,
+    },
+    restTime: 30,
+    thumbnail: "https://example.com/burpees-thumbnail.jpg",
+    videoLinks: [
+      {
+        url: "https://www.youtube.com/watch?v=example5",
+        thumbnail: "https://example.com/video-thumbnail5.jpg",
+        startTime: 0,
+      },
+    ],
+    notes: [
+      {
+        title: "Form",
+        content: "Ensure full body extension during the jump.",
+      },
+    ],
+    variants: [
+      {
+        id: 5,
+        title: "Half Burpee",
+        intensity: 4,
+        repetitions: 20,
+      },
+    ],
+  },
+  {
+    id: 6,
+    title: "Mountain Climbers",
+    description: "A cardio exercise that simulates climbing a mountain.",
+    category: "Cardio",
+    intensity: 4,
+    repetitions: 30,
+    duration: {
+      start: 0,
+      end: 60,
+    },
+    restTime: 30,
+    thumbnail: "https://example.com/mountainclimbers-thumbnail.jpg",
+    videoLinks: [
+      {
+        url: "https://www.youtube.com/watch?v=example6",
+        thumbnail: "https://example.com/video-thumbnail6.jpg",
+        startTime: 0,
+      },
+    ],
+    notes: [
+      {
+        title: "Form",
+        content: "Keep your core tight.",
+      },
+    ],
+    variants: [
+      {
+        id: 6,
+        title: "Cross-Body Mountain Climbers",
+        intensity: 5,
+        repetitions: 25,
+      },
+    ],
+  },
+  {
+    id: 7,
+    title: "Bicycle Crunches",
+    description: "A core exercise targeting the abdominal muscles.",
+    category: "Core",
+    intensity: 4,
+    repetitions: 20,
+    duration: {
+      start: 0,
+      end: 60,
+    },
+    restTime: 30,
+    thumbnail: "https://example.com/bicyclecrunches-thumbnail.jpg",
+    videoLinks: [
+      {
+        url: "https://www.youtube.com/watch?v=example7",
+        thumbnail: "https://example.com/video-thumbnail7.jpg",
+        startTime: 0,
+      },
+    ],
+    notes: [
+      {
+        title: "Form",
+        content: "Keep your lower back pressed to the ground.",
+      },
+    ],
+    variants: [
+      {
+        id: 7,
+        title: "Russian Twists",
+        intensity: 4,
+        repetitions: 20,
+      },
+    ],
+  },
+  {
+    id: 8,
+    title: "Dips",
+    description: "An upper body exercise focusing on triceps strength.",
+    category: "Strength",
+    intensity: 5,
+    repetitions: 12,
+    duration: {
+      start: 0,
+      end: 60,
+    },
+    restTime: 45,
+    thumbnail: "https://example.com/dips-thumbnail.jpg",
+    videoLinks: [
+      {
+        url: "https://www.youtube.com/watch?v=example8",
+        thumbnail: "https://example.com/video-thumbnail8.jpg",
+        startTime: 0,
+      },
+    ],
+    notes: [
+      {
+        title: "Form",
+        content: "Keep your elbows close to your body.",
+      },
+    ],
+    variants: [
+      {
+        id: 8,
+        title: "Bench Dips",
+        intensity: 4,
+        repetitions: 15,
+      },
+    ],
+  },
+  {
+    id: 9,
+    title: "Deadlift",
+    description: "A compound exercise targeting multiple muscle groups.",
+    category: "Strength",
+    intensity: 5,
+    repetitions: 10,
+    duration: {
+      start: 0,
+      end: 120,
+    },
+    restTime: 60,
+    thumbnail: "https://example.com/deadlift-thumbnail.jpg",
+    videoLinks: [
+      {
+        url: "https://www.youtube.com/watch?v=example9",
+        thumbnail: "https://example.com/video-thumbnail9.jpg",
+        startTime: 0,
+      },
+    ],
+    notes: [
+      {
+        title: "Form",
+        content: "Keep your back straight and lift with your legs.",
+      },
+    ],
+    variants: [
+      {
+        id: 9,
+        title: "Romanian Deadlift",
+        intensity: 5,
+        repetitions: 10,
+      },
+    ],
+  },
+  {
+    id: 10,
+    title: "Chest Press",
+    description: "A strength exercise focusing on the chest muscles.",
+    category: "Strength",
+    intensity: 4,
+    repetitions: 12,
+    duration: {
+      start: 0,
+      end: 60,
+    },
+    restTime: 45,
+    thumbnail: "https://example.com/chestpress-thumbnail.jpg",
+    videoLinks: [
+      {
+        url: "https://www.youtube.com/watch?v=example10",
+        thumbnail: "https://example.com/video-thumbnail10.jpg",
+        startTime: 0,
+      },
+    ],
+    notes: [
+      {
+        title: "Form",
+        content: "Keep your shoulders down and back.",
+      },
+    ],
+    variants: [
+      {
+        id: 10,
+        title: "Incline Chest Press",
+        intensity: 5,
+        repetitions: 12,
       },
     ],
   },

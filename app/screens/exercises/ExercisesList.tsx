@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -8,11 +8,22 @@ import {
   SafeAreaView,
 } from "react-native";
 import SwipeableRow from "@/components/SwipeableRow"; // Importer le composant SwipeableRow
+import SearchBar from "@/components/SearchBar"; // Assurez-vous que ce composant existe et est bien importé
 import FloatingActionButton from "@/components/FloatingActionButton"; // Importer le bouton flottant
 import { exercises } from "@/app/data/exercises"; // Importer la liste d'exercices
 import GestureHandlerWrapper from "@/components/GestureHandlerWrapper"; // Importer le wrapper
 
 const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const [filteredExercises, setFilteredExercises] =
+    useState<Exercise[]>(exercises);
+
+  const handleSearch = (query: string) => {
+    const filtered = exercises.filter((exercise) =>
+      exercise.title.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredExercises(filtered);
+  };
+
   const handlePress = (exerciseId: number) => {
     navigation.navigate("screens/exercises/ExerciseDetail", { exerciseId });
   };
@@ -76,8 +87,9 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <SearchBar onSearch={handleSearch} />
       <FlatList
-        data={exercises}
+        data={filteredExercises}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
       />
