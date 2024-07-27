@@ -8,6 +8,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
+import ExerciseDetail from "@/app/screens/exercises/ExerciseDetail";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 
@@ -33,8 +34,15 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="(tabs)"
+          options={{ headerShown: false, title: "Gym Planner" }}
+        />
         <Stack.Screen name="+not-found" />
+        <Stack.Screen
+          name="screens/exercises/ExerciseDetail"
+          options={{ title: "Detail d'un exercice" }}
+        />
       </Stack>
     </ThemeProvider>
   );

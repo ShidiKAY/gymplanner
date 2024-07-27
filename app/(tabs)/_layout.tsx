@@ -18,6 +18,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
+          headerShown: true,
           title: "Home",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
@@ -28,10 +29,10 @@ export default function TabLayout() {
           ),
         }}
       />
-
       <Tabs.Screen
         name="Programs"
         options={{
+          headerShown: true,
           title: "Programmes",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
@@ -42,10 +43,10 @@ export default function TabLayout() {
           ),
         }}
       />
-
       <Tabs.Screen
         name="Sessions"
         options={{
+          headerShown: true,
           title: "Séssions",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
@@ -56,10 +57,10 @@ export default function TabLayout() {
           ),
         }}
       />
-
       <Tabs.Screen
         name="Exercises"
         options={{
+          headerShown: true,
           title: "Exercices",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
@@ -70,10 +71,10 @@ export default function TabLayout() {
           ),
         }}
       />
-
       <Tabs.Screen
         name="Progress"
         options={{
+          headerShown: true,
           title: "Progrés",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
@@ -84,10 +85,10 @@ export default function TabLayout() {
           ),
         }}
       />
-
       <Tabs.Screen
         name="Calendar"
         options={{
+          headerShown: true,
           title: "Calendrier",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon

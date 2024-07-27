@@ -1,11 +1,16 @@
+// app/screens/tabs/ExercisesTab.tsx
+
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import ExercisesScreen from "../screens/ExercisesScreen";
+import { useNavigation } from "@react-navigation/native";
+import ExercisesList from "@/app/screens/exercises/ExercisesList"; // Assurez-vous que le chemin est correct
 
 export default function ExercisesTab() {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
-      <ExercisesScreen />
+      <ExercisesList navigation={navigation} />
     </View>
   );
 }
