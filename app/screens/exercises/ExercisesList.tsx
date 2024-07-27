@@ -13,8 +13,8 @@ import { exercises } from "@/app/data/exercises"; // Importer la liste d'exercic
 import GestureHandlerWrapper from "@/components/GestureHandlerWrapper"; // Importer le wrapper
 
 const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const handleDetail = (exerciseId: number) => {
-    navigation.navigate("ExerciseDetail", { exerciseId });
+  const handlePress = (exerciseId: number) => {
+    navigation.navigate("screens/exercises/ExerciseDetail", { exerciseId });
   };
 
   const handleEdit = (exerciseId: number) => {
@@ -42,29 +42,35 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
       onEdit={() => handleEdit(item.id)}
       onDelete={() => handleDelete(item.id)}
       onCreateFrom={() => handleCreateFrom(item.id)}
-      onPress={() =>
-        navigation.navigate("exercise/[exerciseId]", { exerciseId: item.id })
-      }
     >
-      <View style={styles.item}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.description}>{item.description}</Text>
-        <View style={styles.detailsContainer}>
-          <Text style={styles.detailText}>Category: {item.category}</Text>
+      <TouchableOpacity
+        onPress={() => handlePress(item.id)}
+        activeOpacity={0.9}
+        active
+        style={styles.touchable}
+      >
+        <View style={styles.item}>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.description}>{item.description}</Text>
+          <View style={styles.detailsContainer}>
+            <Text style={styles.detailText}>Category: {item.category}</Text>
+          </View>
+          <View style={styles.detailsContainer}>
+            <Text style={styles.detailText}>
+              Repetitions: {item.repetitions}
+            </Text>
+            <Text style={styles.detailText}>
+              Rest Time: {item.restTime} seconds
+            </Text>
+          </View>
+          <View style={styles.detailsContainer}>
+            <Text style={styles.detailText}>
+              Duration: {item.duration.start} - {item.duration.end} seconds
+            </Text>
+            <Text style={styles.detailText}>Intensity: {item.intensity}</Text>
+          </View>
         </View>
-        <View style={styles.detailsContainer}>
-          <Text style={styles.detailText}>Repetitions: {item.repetitions}</Text>
-          <Text style={styles.detailText}>
-            Rest Time: {item.restTime} seconds
-          </Text>
-        </View>
-        <View style={styles.detailsContainer}>
-          <Text style={styles.detailText}>
-            Duration: {item.duration.start} - {item.duration.end} seconds
-          </Text>
-          <Text style={styles.detailText}>Intensity: {item.intensity}</Text>
-        </View>
-      </View>
+      </TouchableOpacity>
     </SwipeableRow>
   );
 
@@ -90,7 +96,12 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 12, // Réduction de la taille de la marge intérieure
     borderRadius: 8,
-    elevation: 1,
+    elevation: 1, // Ombre légère
+  },
+  touchable: {
+    borderRadius: 6, // Bordures arrondies
+    overflow: "hidden", // Assure que les bordures arrondies sont respectées
+    backgroundColor: "transparent", // Pas de fond supplémentaire pour éviter les bordures supplémentaires
   },
   title: {
     fontSize: 18,
