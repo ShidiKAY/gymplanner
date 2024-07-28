@@ -243,218 +243,197 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
     } else {
       grouped = { "": filteredExercises };
     }
-    return Object.keys(grouped).map((key) => ({
-      title: key,
-      data: grouped[key],
+    return Object.keys(grouped).map((title) => ({
+      title,
+      data: grouped[title],
     }));
   };
 
   return (
-    <GestureHandlerWrapper>
-      <SafeAreaView style={styles.container}>
-        <View style={styles.searchBarContainer}>
-          <SearchBar onSearch={handleSearch} />
-          <TouchableOpacity onPress={handleFilter} style={styles.filterButton}>
-            <FontAwesome name="filter" size={24} color="#000" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleSort} style={styles.sortButton}>
-            <FontAwesome name="sort" size={24} color="#000" />
+    <SafeAreaView style={styles.container}>
+      <SearchBar onSearch={handleSearch} />
+      <View style={styles.sortFilterContainer}>
+        <TouchableOpacity style={styles.filterButton} onPress={handleFilter}>
+          <FontAwesome name="filter" size={24} color="white" />
+        </TouchableOpacity>
+        <View style={styles.sortButton}>
+          <Text style={styles.sortText}>
+            Trier par {sortBy === "alphabetical" ? "A-Z" : "Partie du corps"}
+          </Text>
+          <TouchableOpacity onPress={handleSort}>
+            <FontAwesome name="sort-down" size={24} color="white" />
           </TouchableOpacity>
         </View>
+      </View>
+      <GestureHandlerWrapper>
         <SectionList
           sections={groupedData()}
           keyExtractor={(item) => item.id?.toString() || ""}
           renderItem={renderItem}
           renderSectionHeader={renderSectionHeader}
           contentContainerStyle={styles.listContainer}
-          ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
         />
-        <FloatingActionButton onPress={handleAdd} />
-        <Modal
-          visible={isModalVisible}
-          animationType="fade"
-          transparent={true}
-          onRequestClose={handleDeleteCancel}
-        >
-          <View style={styles.modalContainer}>
-            <Animated.View
+      </GestureHandlerWrapper>
+
+      <FloatingActionButton onPress={handleAdd} />
+
+      <Modal visible={isModalVisible} transparent={true} animationType="fade">
+        <View style={styles.modalContainer}>
+          <Animated.View
+            style={[
+              styles.modalContent,
+              {
+                opacity: modalOpacity,
+                transform: [{ translateY: modalTranslateY }],
+              },
+            ]}
+          >
+            <Text style={styles.modalText}>
+              Are you sure you want to delete this exercise?
+            </Text>
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity
+                onPress={handleDeleteConfirm}
+                style={styles.modalButton}
+              >
+                <Text style={styles.modalButtonText}>Yes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleDeleteCancel}
+                style={styles.modalButton}
+              >
+                <Text style={styles.modalButtonText}>No</Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        </View>
+      </Modal>
+
+      <Modal visible={isFilterModalVisible} animationType="slide">
+        <View style={styles.filterModalContainer}>
+          <Text style={styles.filterModalTitle}>Filter by Body Part</Text>
+          <ScrollView>
+            {bodyParts.map((bodyPart) => (
+              <TouchableOpacity
+                key={bodyPart.id}
+                onPress={() => {
+                  setSelectedBodyParts((prev) =>
+                    prev.includes(bodyPart.id)
+                      ? prev.filter((id) => id !== bodyPart.id)
+                      : [...prev, bodyPart.id]
+                  );
+                }}
+                style={[
+                  styles.filterOption,
+                  selectedBodyParts.includes(bodyPart.id) &&
+                    styles.selectedFilterOption,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.filterOptionText,
+                    selectedBodyParts.includes(bodyPart.id) &&
+                      styles.selectedFilterOptionText,
+                  ]}
+                >
+                  {bodyPart.nameFr}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+          <Text style={styles.filterModalTitle}>Filter by Equipment</Text>
+          <ScrollView>
+            {equipmentList.map((equipment) => (
+              <TouchableOpacity
+                key={equipment.id}
+                onPress={() => {
+                  setSelectedEquipment((prev) =>
+                    prev.includes(equipment.id)
+                      ? prev.filter((id) => id !== equipment.id)
+                      : [...prev, equipment.id]
+                  );
+                }}
+                style={[
+                  styles.filterOption,
+                  selectedEquipment.includes(equipment.id) &&
+                    styles.selectedFilterOption,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.filterOptionText,
+                    selectedEquipment.includes(equipment.id) &&
+                      styles.selectedFilterOptionText,
+                  ]}
+                >
+                  {equipment.nameFr}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+          <View style={styles.filterModalButtonContainer}>
+            <TouchableOpacity
+              onPress={applyFilters}
+              style={styles.filterModalButton}
+            >
+              <Text style={styles.filterModalButtonText}>Apply</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={resetFilters}
+              style={styles.filterModalButton}
+            >
+              <Text style={styles.filterModalButtonText}>Reset</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={isSortModalVisible} animationType="slide">
+        <View style={styles.sortModalContainer}>
+          <Text style={styles.sortModalTitle}>Sort by</Text>
+          <TouchableOpacity
+            onPress={() => applySort("alphabetical")}
+            style={[
+              styles.sortOption,
+              sortBy === "alphabetical" && styles.selectedSortOption,
+            ]}
+          >
+            <Text
               style={[
-                styles.modalContent,
-                {
-                  opacity: modalOpacity,
-                  transform: [{ translateY: modalTranslateY }],
-                },
+                styles.sortOptionText,
+                sortBy === "alphabetical" && styles.selectedSortOptionText,
               ]}
             >
-              <Text style={styles.modalText}>
-                Are you sure you want to delete this exercise?
-              </Text>
-              <View style={styles.modalButtonContainer}>
-                <TouchableOpacity
-                  onPress={handleDeleteConfirm}
-                  style={styles.modalButton}
-                >
-                  <Text style={styles.modalButtonText}>Delete</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleDeleteCancel}
-                  style={[styles.modalButton, styles.modalCancelButton]}
-                >
-                  <Text
-                    style={[styles.modalButtonText, styles.modalCancelText]}
-                  >
-                    Cancel
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </Animated.View>
+              Alphabetical
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => applySort("bodyPart")}
+            style={[
+              styles.sortOption,
+              sortBy === "bodyPart" && styles.selectedSortOption,
+            ]}
+          >
+            <Text
+              style={[
+                styles.sortOptionText,
+                sortBy === "bodyPart" && styles.selectedSortOptionText,
+              ]}
+            >
+              Body Part
+            </Text>
+          </TouchableOpacity>
+          <View style={styles.sortModalButtonContainer}>
+            <TouchableOpacity
+              onPress={resetSort}
+              style={styles.sortModalButton}
+            >
+              <Text style={styles.sortModalButtonText}>Reset</Text>
+            </TouchableOpacity>
           </View>
-        </Modal>
-        <Modal
-          visible={isFilterModalVisible}
-          animationType="slide"
-          transparent={true}
-          onRequestClose={() => setIsFilterModalVisible(false)}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <ScrollView>
-                <Text style={styles.modalText}>Filter by body part</Text>
-                {bodyParts.map((part) => (
-                  <TouchableOpacity
-                    key={part.id}
-                    onPress={() =>
-                      setSelectedBodyParts((prev) =>
-                        prev.includes(part.id)
-                          ? prev.filter((id) => id !== part.id)
-                          : [...prev, part.id]
-                      )
-                    }
-                    style={[
-                      styles.filterOption,
-                      selectedBodyParts.includes(part.id) &&
-                        styles.filterOptionSelected,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.filterOptionText,
-                        selectedBodyParts.includes(part.id) &&
-                          styles.filterOptionTextSelected,
-                      ]}
-                    >
-                      {part.nameFr}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-                <Text style={styles.modalText}>Filter by equipment</Text>
-                {equipmentList.map((equip) => (
-                  <TouchableOpacity
-                    key={equip.id}
-                    onPress={() =>
-                      setSelectedEquipment((prev) =>
-                        prev.includes(equip.id)
-                          ? prev.filter((id) => id !== equip.id)
-                          : [...prev, equip.id]
-                      )
-                    }
-                    style={[
-                      styles.filterOption,
-                      selectedEquipment.includes(equip.id) &&
-                        styles.filterOptionSelected,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.filterOptionText,
-                        selectedEquipment.includes(equip.id) &&
-                          styles.filterOptionTextSelected,
-                      ]}
-                    >
-                      {equip.nameFr}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-              <View style={styles.modalButtonContainer}>
-                <TouchableOpacity
-                  onPress={applyFilters}
-                  style={styles.modalButton}
-                >
-                  <Text style={styles.modalButtonText}>Apply Filters</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={resetFilters}
-                  style={[styles.modalButton, styles.modalCancelButton]}
-                >
-                  <Text
-                    style={[styles.modalButtonText, styles.modalCancelText]}
-                  >
-                    Reset Filters
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
-        <Modal
-          visible={isSortModalVisible}
-          animationType="slide"
-          transparent={true}
-          onRequestClose={() => setIsSortModalVisible(false)}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalText}>Sort by</Text>
-              <TouchableOpacity
-                onPress={() => applySort("alphabetical")}
-                style={[
-                  styles.sortOption,
-                  sortBy === "alphabetical" && styles.sortOptionSelected,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.sortOptionText,
-                    sortBy === "alphabetical" && styles.sortOptionTextSelected,
-                  ]}
-                >
-                  Alphabetical
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => applySort("bodyPart")}
-                style={[
-                  styles.sortOption,
-                  sortBy === "bodyPart" && styles.sortOptionSelected,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.sortOptionText,
-                    sortBy === "bodyPart" && styles.sortOptionTextSelected,
-                  ]}
-                >
-                  Body Part
-                </Text>
-              </TouchableOpacity>
-              <View style={styles.modalButtonContainer}>
-                <TouchableOpacity
-                  onPress={resetSort}
-                  style={[styles.modalButton, styles.modalCancelButton]}
-                >
-                  <Text
-                    style={[styles.modalButtonText, styles.modalCancelText]}
-                  >
-                    Reset Sort
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
-      </SafeAreaView>
-    </GestureHandlerWrapper>
+        </View>
+      </Modal>
+    </SafeAreaView>
   );
 };
 
@@ -516,7 +495,7 @@ const styles = StyleSheet.create({
     color: "#666",
   },
   sectionHeader: {
-    backgroundColor: "#f8f8f8",
+    backgroundColor: "#f5f5f5",
     paddingVertical: 5,
     paddingHorizontal: 10,
   },
@@ -528,72 +507,136 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    width: 300,
     backgroundColor: "#fff",
-    borderRadius: 10,
+    borderRadius: 8,
     padding: 20,
+    width: "80%",
+    alignItems: "center",
   },
   modalText: {
     fontSize: 18,
-    textAlign: "center",
-    marginBottom: 10,
+    marginBottom: 20,
   },
   modalButtonContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
+    width: "100%",
   },
   modalButton: {
-    flex: 1,
-    padding: 10,
-    backgroundColor: "#ff6b6b",
-    borderRadius: 5,
-    margin: 5,
-    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: "#007BFF",
+    marginHorizontal: 5,
   },
   modalButtonText: {
     color: "#fff",
     fontSize: 16,
   },
-  modalCancelButton: {
-    backgroundColor: "#ccc",
+  sortFilterContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    marginVertical: 10,
   },
-  modalCancelText: {
-    color: "#000",
+  filterButton: {
+    padding: 10,
+    backgroundColor: "#007BFF",
+    borderRadius: 8,
+  },
+  sortButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "#007BFF",
+    borderRadius: 8,
+  },
+  sortText: {
+    color: "#fff",
+    marginRight: 5,
+  },
+  filterModalContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+    padding: 20,
+  },
+  filterModalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
   filterOption: {
     padding: 10,
-    backgroundColor: "#f8f8f8",
-    borderRadius: 5,
+    borderRadius: 8,
     marginVertical: 5,
+    backgroundColor: "#f0f0f0",
   },
-  filterOptionSelected: {
-    backgroundColor: "#ff6b6b",
+  selectedFilterOption: {
+    backgroundColor: "#007BFF",
   },
   filterOptionText: {
     fontSize: 16,
-    textAlign: "center",
   },
-  filterOptionTextSelected: {
+  selectedFilterOptionText: {
     color: "#fff",
+  },
+  filterModalButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 20,
+  },
+  filterModalButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: "#007BFF",
+  },
+  filterModalButtonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  sortModalContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+    padding: 20,
+  },
+  sortModalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
   sortOption: {
     padding: 10,
-    backgroundColor: "#f8f8f8",
-    borderRadius: 5,
+    borderRadius: 8,
     marginVertical: 5,
+    backgroundColor: "#f0f0f0",
   },
-  sortOptionSelected: {
-    backgroundColor: "#ff6b6b",
+  selectedSortOption: {
+    backgroundColor: "#007BFF",
   },
   sortOptionText: {
     fontSize: 16,
-    textAlign: "center",
   },
-  sortOptionTextSelected: {
+  selectedSortOptionText: {
     color: "#fff",
+  },
+  sortModalButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  sortModalButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: "#007BFF",
+  },
+  sortModalButtonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
 
