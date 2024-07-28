@@ -1,6 +1,20 @@
-// src/app/data/exercises.ts
+import { Exercise, BodyPart, Equipment } from "./entities";
 
-import { Exercise } from "@/types/ExerciseTypes";
+export const bodyParts: BodyPart[] = [
+  { id: 1, name: "Arms", nameFr: "Bras" },
+  { id: 2, name: "Legs", nameFr: "Jambes" },
+  { id: 3, name: "Back", nameFr: "Dos" },
+  { id: 4, name: "Chest", nameFr: "Poitrine" },
+  { id: 5, name: "Abs", nameFr: "Abdos" },
+];
+
+export const equipmentList: Equipment[] = [
+  { id: 1, name: "None", nameFr: "Aucun" },
+  { id: 2, name: "Dumbbells", nameFr: "Haltères" },
+  { id: 3, name: "Barbell", nameFr: "Barre" },
+  { id: 4, name: "Machine", nameFr: "Machine" },
+  { id: 5, name: "Cables", nameFr: "Câbles" },
+];
 
 export const exercises: Exercise[] = [
   {
@@ -38,6 +52,8 @@ export const exercises: Exercise[] = [
         repetitions: 12,
       },
     ],
+    bodyPartId: 4, // Correspond to "Chest"
+    equipmentId: 1, // Correspond to "None"
   },
   {
     id: 2,
@@ -73,6 +89,8 @@ export const exercises: Exercise[] = [
         repetitions: 10,
       },
     ],
+    bodyPartId: 2, // Correspond to "Legs"
+    equipmentId: 1, // Correspond to "None"
   },
   {
     id: 3,
@@ -108,6 +126,8 @@ export const exercises: Exercise[] = [
         repetitions: 1,
       },
     ],
+    bodyPartId: 5, // Correspond to "Core"
+    equipmentId: 1, // Correspond to "None"
   },
   {
     id: 4,
@@ -143,6 +163,8 @@ export const exercises: Exercise[] = [
         repetitions: 12,
       },
     ],
+    bodyPartId: 2, // Correspond to "Legs"
+    equipmentId: 1, // Correspond to "None"
   },
   {
     id: 5,
@@ -178,6 +200,8 @@ export const exercises: Exercise[] = [
         repetitions: 20,
       },
     ],
+    bodyPartId: 4, // Correspond to "Full Body"
+    equipmentId: 1, // Correspond to "None"
   },
   {
     id: 6,
@@ -213,6 +237,8 @@ export const exercises: Exercise[] = [
         repetitions: 25,
       },
     ],
+    bodyPartId: 5, // Correspond to "Core"
+    equipmentId: 1, // Correspond to "None"
   },
   {
     id: 7,
@@ -248,6 +274,8 @@ export const exercises: Exercise[] = [
         repetitions: 20,
       },
     ],
+    bodyPartId: 5, // Correspond to "Core"
+    equipmentId: 1, // Correspond to "None"
   },
   {
     id: 8,
@@ -283,6 +311,8 @@ export const exercises: Exercise[] = [
         repetitions: 15,
       },
     ],
+    bodyPartId: 1, // Correspond to "Triceps"
+    equipmentId: 2, // Correspond to "Dip Bars"
   },
   {
     id: 9,
@@ -318,6 +348,8 @@ export const exercises: Exercise[] = [
         repetitions: 10,
       },
     ],
+    bodyPartId: 3, // Correspond to "Back"
+    equipmentId: 3, // Correspond to "Barbell"
   },
   {
     id: 10,
@@ -353,5 +385,17 @@ export const exercises: Exercise[] = [
         repetitions: 12,
       },
     ],
+    bodyPartId: 4, // Correspond to "Chest"
+    equipmentId: 2, // Correspond to "Dumbbells"
   },
 ];
+
+export const getExercises = () => {
+  return exercises;
+};
+
+export const deleteExercise = (exerciseId) => {
+  console.log("deleted " + exerciseId);
+  // ajouter la logique de suppression
+  // exercises = exercises.filter((exercise) => exercise.id !== exerciseId);
+};

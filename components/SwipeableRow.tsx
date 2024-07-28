@@ -82,12 +82,12 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: "row",
     alignItems: "center",
-    height: "92%",
+    height: "100%",
   },
   actionButton: {
     justifyContent: "center",
     alignItems: "center",
-    height: "100%",
+    height: "98%",
     width: 60,
     padding: 0, // Supprimer le padding
     margin: 0, // Supprimer le margin

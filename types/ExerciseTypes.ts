@@ -1,4 +1,14 @@
-// src/types/ExerciseTypes.ts
+export interface BodyPart {
+  id: number;
+  name: string;
+  nameFr: string;
+}
+
+export interface Equipment {
+  id: number;
+  name: string;
+  nameFr: string;
+}
 
 export interface Exercise {
   id: number;
@@ -20,12 +30,14 @@ export interface Exercise {
   }[];
   notes: {
     title: string;
-    content: string; // Utilisez 'content' pour la cohérence avec les données
+    content: string;
   }[];
   variants: {
     id: number;
     title: string;
     intensity: number;
     repetitions: number;
-  }[]; // Définissez la structure des variantes si nécessaire
+  }[];
+  bodyPartId: number; // Changed to reference the ID
+  equipmentId?: number; // Optional if no equipment is used
 }
