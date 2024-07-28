@@ -256,15 +256,14 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
         <TouchableOpacity style={styles.filterButton} onPress={handleFilter}>
           <FontAwesome name="filter" size={24} color="white" />
         </TouchableOpacity>
-        <View style={styles.sortButton}>
+        <TouchableOpacity onPress={handleSort} style={styles.sortButton}>
           <Text style={styles.sortText}>
             Trier par {sortBy === "alphabetical" ? "A-Z" : "Partie du corps"}
           </Text>
-          <TouchableOpacity onPress={handleSort}>
-            <FontAwesome name="sort-down" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
+          {/* <FontAwesome name="sort-down" size={24} color="white" /> */}
+        </TouchableOpacity>
       </View>
+
       <GestureHandlerWrapper>
         <SectionList
           sections={groupedData()}
@@ -448,13 +447,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f8f8",
   },
   filterButton: {
-    marginLeft: 10,
+    padding: 10,
+    backgroundColor: "#007BFF",
+    borderRadius: 8,
   },
   sortButton: {
     marginLeft: 10,
   },
   listContainer: {
-    paddingBottom: 100,
+    paddingBottom: 20, // fin de la liste des exercices
   },
   touchable: {
     marginHorizontal: 0,
@@ -542,17 +543,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginVertical: 10,
   },
-  filterButton: {
-    padding: 10,
-    backgroundColor: "#007BFF",
-    borderRadius: 8,
-  },
   sortButton: {
     flexDirection: "row",
     alignItems: "center",
     padding: 10,
     backgroundColor: "#007BFF",
     borderRadius: 8,
+    // Ajout des dimensions pour ajuster la taille
+    height: 40, // Ajustez cette valeur selon vos besoins
+    width: "auto", // Permet à la largeur de s'ajuster automatiquement
   },
   sortText: {
     color: "#fff",

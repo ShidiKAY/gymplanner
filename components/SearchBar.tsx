@@ -29,6 +29,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 10,
     marginBottom: 10,
   },
   input: {
