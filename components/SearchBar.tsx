@@ -29,11 +29,12 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 10,
+    marginTop: 20,
     marginBottom: 10,
+    paddingHorizontal: 10,
   },
   input: {
-    height: 40,
+    height: 50,
     borderColor: "gray",
     borderWidth: 1,
     borderRadius: 5,

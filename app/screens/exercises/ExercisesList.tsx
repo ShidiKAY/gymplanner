@@ -16,12 +16,9 @@ import { FontAwesome } from "@expo/vector-icons";
 import SwipeableRow from "@/components/SwipeableRow";
 import SearchBar from "@/components/SearchBar";
 import FloatingActionButton from "@/components/FloatingActionButton";
-import {
-  exercises,
-  deleteExercise,
-  bodyParts,
-  equipmentList,
-} from "@/app/data/exercises";
+import { exercises, deleteExercise } from "@/app/data/exercises";
+import { bodyParts } from "@/app/data/bodyParts";
+import { equipments } from "@/app/data/equipments";
 import GestureHandlerWrapper from "@/components/GestureHandlerWrapper";
 
 const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -186,7 +183,7 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
   const renderItem = ({ item }: { item: Exercise }) => {
     const bodyPart = bodyParts.find((part) => part.id === item.bodyPartId);
     const equipment = item.equipmentId
-      ? equipmentList.find((equip) => equip.id === item.equipmentId)
+      ? equipments.find((equip) => equip.id === item.equipmentId)
       : null;
 
     return (
@@ -342,7 +339,7 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
           </ScrollView>
           <Text style={styles.filterModalTitle}>Filter by Equipment</Text>
           <ScrollView>
-            {equipmentList.map((equipment) => (
+            {equipments.map((equipment) => (
               <TouchableOpacity
                 key={equipment.id}
                 onPress={() => {

@@ -1,20 +1,7 @@
-import { Exercise, BodyPart, Equipment } from "./entities";
+import { Exercise } from "@/types/ExerciseTypes";
 
-export const bodyParts: BodyPart[] = [
-  { id: 1, name: "Arms", nameFr: "Bras" },
-  { id: 2, name: "Legs", nameFr: "Jambes" },
-  { id: 3, name: "Back", nameFr: "Dos" },
-  { id: 4, name: "Chest", nameFr: "Poitrine" },
-  { id: 5, name: "Abs", nameFr: "Abdos" },
-];
-
-export const equipmentList: Equipment[] = [
-  { id: 1, name: "None", nameFr: "Aucun" },
-  { id: 2, name: "Dumbbells", nameFr: "Haltères" },
-  { id: 3, name: "Barbell", nameFr: "Barre" },
-  { id: 4, name: "Machine", nameFr: "Machine" },
-  { id: 5, name: "Cables", nameFr: "Câbles" },
-];
+// import { bodyParts } from "./bodyParts";
+// import { equipmentList } from "./equipmentList";
 
 export const exercises: Exercise[] = [
   {

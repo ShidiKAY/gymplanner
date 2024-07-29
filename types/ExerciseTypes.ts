@@ -1,15 +1,3 @@
-export interface BodyPart {
-  id: number;
-  name: string;
-  nameFr: string;
-}
-
-export interface Equipment {
-  id: number;
-  name: string;
-  nameFr: string;
-}
-
 export interface Exercise {
   id: number;
   title: string;
