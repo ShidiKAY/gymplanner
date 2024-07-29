@@ -10,10 +10,10 @@ const SectionHeader = ({ title }) => (
 const styles = StyleSheet.create({
   sectionHeader: {
     backgroundColor: "#f5f5f5",
-    padding: 10,
+    padding: 8,
   },
   sectionHeaderText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
   },
 });

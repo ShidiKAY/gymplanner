@@ -19,9 +19,12 @@ import FloatingActionButton from "@/components/FloatingActionButton";
 import { exercises, deleteExercise } from "@/app/data/exercises";
 import { bodyParts } from "@/app/data/bodyParts";
 import { equipments } from "@/app/data/equipments";
+import { categories } from "@/app/data/categories";
 import GestureHandlerWrapper from "@/components/GestureHandlerWrapper";
 import FilterModal from "@/components/FilterModal";
 import SortModal from "@/components/SortModal";
+import SectionHeader from "@/components/listitems/SectionHeader";
+import ListItem from "@/components/listitems/ListItem";
 
 const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [filteredExercises, setFilteredExercises] =
@@ -157,6 +160,7 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   const applySort = (criteria: string) => {
+    console.log(criteria);
     setSortBy(criteria);
     let sorted = [...filteredExercises];
     if (criteria === "alphabetical") {
@@ -175,12 +179,6 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
     );
     setIsSortModalVisible(false);
   };
-
-  const renderSectionHeader = ({ section: { title } }: any) => (
-    <View style={styles.sectionHeader}>
-      <Text style={styles.sectionHeaderText}>{title}</Text>
-    </View>
-  );
 
   const renderItem = ({ item }: { item: Exercise }) => {
     const bodyPart = bodyParts.find((part) => part.id === item.bodyPartId);
@@ -263,7 +261,7 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      <GestureHandlerWrapper>
+      {/* <GestureHandlerWrapper>
         <SectionList
           sections={groupedData()}
           keyExtractor={(item) => item.id?.toString() || ""}
@@ -271,7 +269,38 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
           renderSectionHeader={renderSectionHeader}
           contentContainerStyle={styles.listContainer}
         />
-      </GestureHandlerWrapper>
+      </GestureHandlerWrapper> */}
+
+      <SectionList
+        sections={groupedData()}
+        keyExtractor={(item) => item.id?.toString() || ""}
+        renderItem={renderItem}
+        contentContainerStyle={styles.listContainer}
+        renderSectionHeader={({ section: { title } }) => (
+          <SectionHeader title={title} />
+        )}
+        renderItem={({ item }) => {
+          const bodyPart = bodyParts.find(
+            (part) => part.id === item.bodyPartId
+          );
+          const equipment = item.equipmentId
+            ? equipments.find((equip) => equip.id === item.equipmentId)
+            : null;
+          return (
+            <ListItem
+              item={item}
+              onPress={handlePress}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              bodyPart={bodyPart}
+              equipment={equipment}
+            />
+          );
+        }}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No exercises found</Text>
+        }
+      />
 
       <FloatingActionButton onPress={handleAdd} />
 

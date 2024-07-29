@@ -1,39 +1,39 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import SwipeableRow from "@/components/SwipeableRow";
-import { bodyParts } from "@/app/data/bodyParts";
-import { equipments } from "@/app/data/equipments";
-import { categories } from "@/app/data/categories";
 
-const ListItem = ({ item, onPress, onEdit, onDelete }) => {
-  const bodyPart = bodyParts.find((part) => part.id === item.bodyPartId);
-  const equipment = item.equipmentId
-    ? equipments.find((equip) => equip.id === item.equipmentId)
-    : null;
-  const category = categories.find((cat) => cat.id === item.categoryId);
-
+const ListItem = ({
+  item,
+  onPress,
+  onEdit,
+  onDelete,
+  onCreateFrom,
+  bodyPart,
+  equipment,
+}) => {
   return (
-    <SwipeableRow onEdit={onEdit} onDelete={onDelete}>
-      <TouchableOpacity onPress={onPress}>
-        <View style={styles.itemContainer}>
-          <Text style={styles.itemTitle}>{item.title}</Text>
-          {bodyPart && (
-            <View style={styles.itemDetail}>
-              <Image source={bodyPart.icon} style={styles.icon} />
-              <Text style={styles.itemText}>{bodyPart.title}</Text>
-            </View>
-          )}
-          {equipment && (
-            <View style={styles.itemDetail}>
-              <Image source={equipment.icon} style={styles.icon} />
-              <Text style={styles.itemText}>{equipment.title}</Text>
-            </View>
-          )}
-          {category && (
-            <View style={styles.itemDetail}>
-              <Text style={styles.itemText}>{category.name}</Text>
-            </View>
-          )}
+    <SwipeableRow
+      onEdit={() => onEdit(item.id)}
+      onDelete={() => onDelete(item.id)}
+      onCreateFrom={() => onCreateFrom(item.id)}
+    >
+      <TouchableOpacity
+        onPress={() => onPress(item.id)}
+        activeOpacity={0.9}
+        style={styles.touchable}
+      >
+        <View style={styles.item}>
+          <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} />
+          <View style={styles.textContainer}>
+            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.description} numberOfLines={2}>
+              {item.description}
+            </Text>
+            <Text style={styles.detailText}>
+              {bodyPart?.nameFr}
+              {equipment && ` • ${equipment.nameFr}`}
+            </Text>
+          </View>
         </View>
       </TouchableOpacity>
     </SwipeableRow>
@@ -41,23 +41,36 @@ const ListItem = ({ item, onPress, onEdit, onDelete }) => {
 };
 
 const styles = StyleSheet.create({
-  itemContainer: {
-    padding: 10,
-  },
-  itemTitle: {
-    fontSize: 16,
-  },
-  itemDetail: {
+  touchable: {
     flexDirection: "row",
     alignItems: "center",
+    padding: 10,
   },
-  icon: {
-    width: 20,
-    height: 20,
-    marginRight: 5,
+  item: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
   },
-  itemText: {
+  thumbnail: {
+    width: 60,
+    height: 60,
+    borderRadius: 5,
+    marginRight: 10,
+  },
+  textContainer: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  description: {
     fontSize: 14,
+    color: "#555",
+  },
+  detailText: {
+    fontSize: 12,
+    color: "#888",
   },
 });
 
