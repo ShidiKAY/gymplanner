@@ -3,7 +3,7 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { SessionsList } from "@/app/screens/sessions/SessionsList"; // Assurez-vous que le chemin est correct
+import SessionsList from "@/app/screens/sessions/SessionsList";
 
 export default function SessionsTab() {
   const navigation = useNavigation();

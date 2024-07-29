@@ -20,6 +20,8 @@ import { exercises, deleteExercise } from "@/app/data/exercises";
 import { bodyParts } from "@/app/data/bodyParts";
 import { equipments } from "@/app/data/equipments";
 import GestureHandlerWrapper from "@/components/GestureHandlerWrapper";
+import FilterModal from "@/components/FilterModal";
+import SortModal from "@/components/SortModal";
 
 const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [filteredExercises, setFilteredExercises] =
@@ -273,6 +275,37 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
 
       <FloatingActionButton onPress={handleAdd} />
 
+      <FilterModal
+        visible={isFilterModalVisible}
+        bodyParts={bodyParts}
+        equipments={equipments}
+        selectedBodyParts={selectedBodyParts}
+        selectedEquipment={selectedEquipment}
+        onBodyPartSelect={(id) =>
+          setSelectedBodyParts((prev) =>
+            prev.includes(id)
+              ? prev.filter((partId) => partId !== id)
+              : [...prev, id]
+          )
+        }
+        onEquipmentSelect={(id) =>
+          setSelectedEquipment((prev) =>
+            prev.includes(id)
+              ? prev.filter((equipId) => equipId !== id)
+              : [...prev, id]
+          )
+        }
+        onApplyFilters={applyFilters}
+        onResetFilters={resetFilters}
+      />
+
+      <SortModal
+        visible={isSortModalVisible}
+        sortBy={sortBy}
+        onSort={applySort}
+        onResetSort={resetSort}
+      />
+
       <Modal visible={isModalVisible} transparent={true} animationType="fade">
         <View style={styles.modalContainer}>
           <Animated.View
@@ -304,131 +337,6 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
           </Animated.View>
         </View>
       </Modal>
-
-      <Modal visible={isFilterModalVisible} animationType="slide">
-        <View style={styles.filterModalContainer}>
-          <Text style={styles.filterModalTitle}>Filter by Body Part</Text>
-          <ScrollView>
-            {bodyParts.map((bodyPart) => (
-              <TouchableOpacity
-                key={bodyPart.id}
-                onPress={() => {
-                  setSelectedBodyParts((prev) =>
-                    prev.includes(bodyPart.id)
-                      ? prev.filter((id) => id !== bodyPart.id)
-                      : [...prev, bodyPart.id]
-                  );
-                }}
-                style={[
-                  styles.filterOption,
-                  selectedBodyParts.includes(bodyPart.id) &&
-                    styles.selectedFilterOption,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.filterOptionText,
-                    selectedBodyParts.includes(bodyPart.id) &&
-                      styles.selectedFilterOptionText,
-                  ]}
-                >
-                  {bodyPart.nameFr}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-          <Text style={styles.filterModalTitle}>Filter by Equipment</Text>
-          <ScrollView>
-            {equipments.map((equipment) => (
-              <TouchableOpacity
-                key={equipment.id}
-                onPress={() => {
-                  setSelectedEquipment((prev) =>
-                    prev.includes(equipment.id)
-                      ? prev.filter((id) => id !== equipment.id)
-                      : [...prev, equipment.id]
-                  );
-                }}
-                style={[
-                  styles.filterOption,
-                  selectedEquipment.includes(equipment.id) &&
-                    styles.selectedFilterOption,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.filterOptionText,
-                    selectedEquipment.includes(equipment.id) &&
-                      styles.selectedFilterOptionText,
-                  ]}
-                >
-                  {equipment.nameFr}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-          <View style={styles.filterModalButtonContainer}>
-            <TouchableOpacity
-              onPress={applyFilters}
-              style={styles.filterModalButton}
-            >
-              <Text style={styles.filterModalButtonText}>Apply</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={resetFilters}
-              style={styles.filterModalButton}
-            >
-              <Text style={styles.filterModalButtonText}>Reset</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      <Modal visible={isSortModalVisible} animationType="slide">
-        <View style={styles.sortModalContainer}>
-          <Text style={styles.sortModalTitle}>Sort by</Text>
-          <TouchableOpacity
-            onPress={() => applySort("alphabetical")}
-            style={[
-              styles.sortOption,
-              sortBy === "alphabetical" && styles.selectedSortOption,
-            ]}
-          >
-            <Text
-              style={[
-                styles.sortOptionText,
-                sortBy === "alphabetical" && styles.selectedSortOptionText,
-              ]}
-            >
-              Alphabetical
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => applySort("bodyPart")}
-            style={[
-              styles.sortOption,
-              sortBy === "bodyPart" && styles.selectedSortOption,
-            ]}
-          >
-            <Text
-              style={[
-                styles.sortOptionText,
-                sortBy === "bodyPart" && styles.selectedSortOptionText,
-              ]}
-            >
-              Body Part
-            </Text>
-          </TouchableOpacity>
-          <View style={styles.sortModalButtonContainer}>
-            <TouchableOpacity
-              onPress={resetSort}
-              style={styles.sortModalButton}
-            >
-              <Text style={styles.sortModalButtonText}>Reset</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </SafeAreaView>
   );
 };
@@ -436,6 +344,7 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#fff",
   },
   searchBarContainer: {
     flexDirection: "row",
@@ -447,9 +356,6 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#007BFF",
     borderRadius: 8,
-  },
-  sortButton: {
-    marginLeft: 10,
   },
   listContainer: {
     paddingBottom: 20, // fin de la liste des exercices

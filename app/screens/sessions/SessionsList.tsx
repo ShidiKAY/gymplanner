@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,53 +7,33 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Modal,
-  Alert,
-  Animated,
   Image,
-  ScrollView,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import SwipeableRow from "@/components/SwipeableRow";
 import SearchBar from "@/components/SearchBar";
 import FloatingActionButton from "@/components/FloatingActionButton";
+import ModalComponent from "@/components/ModalComponent";
 import { sessions, deleteSession } from "@/app/data/sessions";
 import { bodyParts } from "@/app/data/bodyParts";
 import { equipments } from "@/app/data/equipments";
-import GestureHandlerWrapper from "@/components/GestureHandlerWrapper";
+import { categories } from "@/app/data/categories";
+import FilterModal from "@/components/FilterModal";
+import SortModal from "@/components/SortModal";
+import ListItem from "@/components/listitems/ListItem";
+import SectionHeader from "@/components/listitems/SectionHeader";
 
-export const SessionsList: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [filteredSessions, setFilteredSessions] = useState<Session[]>(sessions);
+const SessionsList: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const [filteredSessions, setFilteredSessions] = useState(sessions);
   const [selectedSessionId, setSelectedSessionId] = useState<number | null>(
     null
   );
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
   const [isSortModalVisible, setIsSortModalVisible] = useState(false);
   const [selectedBodyParts, setSelectedBodyParts] = useState<number[]>([]);
   const [selectedEquipment, setSelectedEquipment] = useState<number[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
   const [sortBy, setSortBy] = useState<string>("alphabetical");
-
-  const modalOpacity = useRef(new Animated.Value(0)).current;
-  const modalTranslateY = useRef(new Animated.Value(300)).current;
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(modalOpacity, {
-        toValue:
-          isModalVisible || isFilterModalVisible || isSortModalVisible ? 1 : 0,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.timing(modalTranslateY, {
-        toValue:
-          isModalVisible || isFilterModalVisible || isSortModalVisible
-            ? 0
-            : 300,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [isModalVisible, isFilterModalVisible, isSortModalVisible]);
 
   const handleSearch = (query: string) => {
     const filtered = sessions.filter((session) =>
@@ -67,12 +47,7 @@ export const SessionsList: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   const handleEdit = (sessionId: number) => {
-    const session = sessions.find((s) => s.id === sessionId);
-    if (session) {
-      navigation.navigate("screens/sessions/SessionEdit", {
-        sessionId: session.id,
-      });
-    }
+    navigation.navigate("screens/sessions/SessionEdit", { sessionId });
   };
 
   const handleAdd = () => {
@@ -81,7 +56,7 @@ export const SessionsList: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const handleDelete = (sessionId: number) => {
     setSelectedSessionId(sessionId);
-    setIsModalVisible(true);
+    // Show confirmation modal
   };
 
   const handleDeleteConfirm = () => {
@@ -90,14 +65,11 @@ export const SessionsList: React.FC<{ navigation: any }> = ({ navigation }) => {
       setFilteredSessions(
         filteredSessions.filter((session) => session.id !== selectedSessionId)
       );
-      Alert.alert("Session deleted successfully");
     }
-    setIsModalVisible(false);
     setSelectedSessionId(null);
   };
 
   const handleDeleteCancel = () => {
-    setIsModalVisible(false);
     setSelectedSessionId(null);
   };
 
@@ -117,6 +89,11 @@ export const SessionsList: React.FC<{ navigation: any }> = ({ navigation }) => {
         selectedEquipment.includes(session.equipmentId!)
       );
     }
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter((session) =>
+        selectedCategories.includes(session.categoryId!)
+      );
+    }
     setFilteredSessions(filtered);
     setIsFilterModalVisible(false);
   };
@@ -124,6 +101,7 @@ export const SessionsList: React.FC<{ navigation: any }> = ({ navigation }) => {
   const resetFilters = () => {
     setSelectedBodyParts([]);
     setSelectedEquipment([]);
+    setSelectedCategories([]);
     setFilteredSessions(sessions);
   };
 
@@ -162,64 +140,37 @@ export const SessionsList: React.FC<{ navigation: any }> = ({ navigation }) => {
     const equipment = item.equipmentId
       ? equipments.find((equip) => equip.id === item.equipmentId)
       : null;
+    const category = categories.find((cat) => cat.id === item.categoryId);
 
     return (
       <SwipeableRow
         onEdit={() => handleEdit(item.id)}
         onDelete={() => handleDelete(item.id)}
       >
-        <TouchableOpacity
-          onPress={() => handlePress(item.id)}
-          activeOpacity={0.9}
-          style={styles.touchable}
-        >
-          <View style={styles.item}>
-            <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} />
-            <View style={styles.textContainer}>
-              <Text style={styles.title}>{item.title}</Text>
-              <Text style={styles.description} numberOfLines={2}>
-                {item.description}
-              </Text>
-              <Text style={styles.detailText}>
-                {bodyPart?.nameFr}
-                {equipment && ` • ${equipment.nameFr}`}
-              </Text>
-            </View>
+        <TouchableOpacity onPress={() => handlePress(item.id)}>
+          <View style={styles.itemContainer}>
+            <Text style={styles.itemTitle}>{item.title}</Text>
+            {bodyPart && (
+              <View style={styles.itemDetail}>
+                <Image source={bodyPart.icon} style={styles.icon} />
+                <Text style={styles.itemText}>{bodyPart.title}</Text>
+              </View>
+            )}
+            {equipment && (
+              <View style={styles.itemDetail}>
+                <Image source={equipment.icon} style={styles.icon} />
+                <Text style={styles.itemText}>{equipment.title}</Text>
+              </View>
+            )}
+            {category && (
+              <View style={styles.itemDetail}>
+                <Text style={styles.itemText}>{category.name}</Text>
+              </View>
+            )}
           </View>
         </TouchableOpacity>
       </SwipeableRow>
     );
-  };
-
-  const groupedData = () => {
-    let grouped;
-    if (sortBy === "alphabetical") {
-      grouped = filteredSessions.reduce((sections: any, session) => {
-        const firstLetter = session.title[0].toUpperCase();
-        if (!sections[firstLetter]) {
-          sections[firstLetter] = [];
-        }
-        sections[firstLetter].push(session);
-        return sections;
-      }, {});
-    } else if (sortBy === "bodyPart") {
-      grouped = filteredSessions.reduce((sections: any, session) => {
-        const bodyPart = bodyParts.find(
-          (part) => part.id === session.bodyPartId
-        )?.nameFr;
-        if (!sections[bodyPart!]) {
-          sections[bodyPart!] = [];
-        }
-        sections[bodyPart!].push(session);
-        return sections;
-      }, {});
-    } else {
-      grouped = { "": filteredSessions };
-    }
-    return Object.keys(grouped).map((title) => ({
-      title,
-      data: grouped[title],
-    }));
   };
 
   return (
@@ -233,168 +184,75 @@ export const SessionsList: React.FC<{ navigation: any }> = ({ navigation }) => {
           <Text style={styles.sortText}>
             Trier par {sortBy === "alphabetical" ? "A-Z" : "Partie du corps"}
           </Text>
+          {/* <FontAwesome name="sort-down" size={24} color="white" /> */}
         </TouchableOpacity>
       </View>
-
-      <GestureHandlerWrapper>
-        <SectionList
-          sections={groupedData()}
-          keyExtractor={(item) => item.id?.toString() || ""}
-          renderItem={renderItem}
-          renderSectionHeader={renderSectionHeader}
-          contentContainerStyle={styles.listContainer}
-        />
-      </GestureHandlerWrapper>
-
+      <SectionList
+        sections={filteredSessions.map((session) => ({
+          title:
+            categories.find((cat) => cat.id === session.categoryId)?.name ||
+            "Uncategorized",
+          data: [session],
+        }))}
+        keyExtractor={(item) => item.id.toString()}
+        renderSectionHeader={({ section: { title } }) => (
+          <SectionHeader title={title} />
+        )}
+        renderItem={({ item }) => (
+          <ListItem
+            item={item}
+            onPress={() => handlePress(item.id)}
+            onEdit={() => handleEdit(item.id)}
+            onDelete={() => handleDelete(item.id)}
+          />
+        )}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No sessions found</Text>
+        }
+      />
       <FloatingActionButton onPress={handleAdd} />
 
-      {/* Modal de Suppression */}
-      <Modal transparent visible={isModalVisible}>
-        <View style={styles.modalBackground}>
-          <Animated.View
-            style={[
-              styles.modal,
-              {
-                opacity: modalOpacity,
-                transform: [{ translateY: modalTranslateY }],
-              },
-            ]}
-          >
-            <Text style={styles.modalText}>
-              Êtes-vous sûr de vouloir supprimer cette session ?
-            </Text>
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                onPress={handleDeleteConfirm}
-                style={styles.modalButton}
-              >
-                <Text style={styles.modalButtonText}>Confirmer</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleDeleteCancel}
-                style={styles.modalButton}
-              >
-                <Text style={styles.modalButtonText}>Annuler</Text>
-              </TouchableOpacity>
-            </View>
-          </Animated.View>
-        </View>
-      </Modal>
+      <FilterModal
+        visible={isFilterModalVisible}
+        bodyParts={bodyParts}
+        equipments={equipments}
+        selectedBodyParts={selectedBodyParts}
+        selectedEquipment={selectedEquipment}
+        onBodyPartSelect={(id) =>
+          setSelectedBodyParts((prev) =>
+            prev.includes(id)
+              ? prev.filter((partId) => partId !== id)
+              : [...prev, id]
+          )
+        }
+        onEquipmentSelect={(id) =>
+          setSelectedEquipment((prev) =>
+            prev.includes(id)
+              ? prev.filter((equipId) => equipId !== id)
+              : [...prev, id]
+          )
+        }
+        onApplyFilters={applyFilters}
+        onResetFilters={resetFilters}
+      />
 
-      {/* Modal de Filtrage */}
-      <Modal transparent visible={isFilterModalVisible}>
-        <View style={styles.modalBackground}>
-          <Animated.View
-            style={[
-              styles.modal,
-              {
-                opacity: modalOpacity,
-                transform: [{ translateY: modalTranslateY }],
-              },
-            ]}
-          >
-            <Text style={styles.modalText}>Filtrer les sessions</Text>
-            <ScrollView style={styles.modalScrollView}>
-              <Text style={styles.filterTitle}>Parties du corps</Text>
-              {bodyParts.map((part) => (
-                <TouchableOpacity
-                  key={part.id}
-                  onPress={() => {
-                    setSelectedBodyParts((prev) =>
-                      prev.includes(part.id)
-                        ? prev.filter((id) => id !== part.id)
-                        : [...prev, part.id]
-                    );
-                  }}
-                  style={styles.filterOption}
-                >
-                  <Text style={styles.filterOptionText}>
-                    {part.nameFr}
-                    {selectedBodyParts.includes(part.id) && " ✓"}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-              <Text style={styles.filterTitle}>Équipements</Text>
-              {equipments.map((equip) => (
-                <TouchableOpacity
-                  key={equip.id}
-                  onPress={() => {
-                    setSelectedEquipment((prev) =>
-                      prev.includes(equip.id)
-                        ? prev.filter((id) => id !== equip.id)
-                        : [...prev, equip.id]
-                    );
-                  }}
-                  style={styles.filterOption}
-                >
-                  <Text style={styles.filterOptionText}>
-                    {equip.nameFr}
-                    {selectedEquipment.includes(equip.id) && " ✓"}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                onPress={applyFilters}
-                style={styles.modalButton}
-              >
-                <Text style={styles.modalButtonText}>Appliquer</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={resetFilters}
-                style={styles.modalButton}
-              >
-                <Text style={styles.modalButtonText}>Réinitialiser</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setIsFilterModalVisible(false)}
-                style={styles.modalButton}
-              >
-                <Text style={styles.modalButtonText}>Annuler</Text>
-              </TouchableOpacity>
-            </View>
-          </Animated.View>
-        </View>
-      </Modal>
+      <SortModal
+        visible={isSortModalVisible}
+        sortBy={sortBy}
+        onSort={applySort}
+        onResetSort={resetSort}
+      />
 
-      {/* Modal de Tri */}
-      <Modal transparent visible={isSortModalVisible}>
-        <View style={styles.modalBackground}>
-          <Animated.View
-            style={[
-              styles.modal,
-              {
-                opacity: modalOpacity,
-                transform: [{ translateY: modalTranslateY }],
-              },
-            ]}
-          >
-            <Text style={styles.modalText}>Trier par</Text>
-            <TouchableOpacity
-              onPress={() => applySort("alphabetical")}
-              style={styles.modalButton}
-            >
-              <Text style={styles.modalButtonText}>A-Z</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => applySort("bodyPart")}
-              style={styles.modalButton}
-            >
-              <Text style={styles.modalButtonText}>Partie du corps</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={resetSort} style={styles.modalButton}>
-              <Text style={styles.modalButtonText}>Réinitialiser</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => setIsSortModalVisible(false)}
-              style={styles.modalButton}
-            >
-              <Text style={styles.modalButtonText}>Annuler</Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </View>
-      </Modal>
+      <ModalComponent
+        visible={selectedSessionId !== null}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Confirm Delete"
+        confirmText="Delete"
+        cancelText="Cancel"
+      >
+        <Text>Are you sure you want to delete this session?</Text>
+      </ModalComponent>
     </SafeAreaView>
   );
 };
@@ -402,113 +260,79 @@ export const SessionsList: React.FC<{ navigation: any }> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
-  sortFilterContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 10,
-  },
-  filterButton: {
-    backgroundColor: "#007bff",
-    borderRadius: 5,
-    padding: 10,
-  },
-  sortButton: {
-    backgroundColor: "#007bff",
-    borderRadius: 5,
-    padding: 10,
-  },
-  sortText: {
-    color: "#fff",
-    fontSize: 16,
+    backgroundColor: "#fff",
   },
   sectionHeader: {
-    backgroundColor: "#eaeaea",
+    backgroundColor: "#f5f5f5",
     padding: 10,
   },
   sectionHeaderText: {
     fontSize: 18,
     fontWeight: "bold",
   },
-  item: {
-    flexDirection: "row",
+  itemContainer: {
     padding: 10,
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
   },
-  thumbnail: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    marginRight: 10,
-  },
-  textContainer: {
-    flex: 1,
-    justifyContent: "center",
-  },
-  title: {
+  itemTitle: {
     fontSize: 16,
-    fontWeight: "bold",
   },
-  description: {
+  itemDetail: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  icon: {
+    width: 20,
+    height: 20,
+    marginRight: 5,
+  },
+  itemText: {
     fontSize: 14,
-    color: "#555",
   },
-  detailText: {
-    fontSize: 12,
-    color: "#777",
-  },
-  touchable: {
-    flex: 1,
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  modal: {
-    backgroundColor: "#fff",
+  emptyText: {
+    textAlign: "center",
     padding: 20,
-    borderRadius: 10,
-    width: "80%",
+  },
+  buttonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 10,
+  },
+  button: {
+    backgroundColor: "#007BFF",
+    padding: 10,
+    borderRadius: 8,
     alignItems: "center",
-  },
-  modalText: {
-    fontSize: 16,
-    marginBottom: 20,
-  },
-  modalButtons: {
     flexDirection: "row",
   },
-  modalButton: {
-    backgroundColor: "#007bff",
-    borderRadius: 5,
-    padding: 10,
-    marginHorizontal: 5,
-  },
-  modalButtonText: {
+  buttonText: {
     color: "#fff",
+    marginLeft: 5,
   },
-  modalScrollView: {
-    width: "100%",
-  },
-  filterTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
+  sortFilterContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
     marginVertical: 10,
   },
-  filterOption: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+  sortButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "#007BFF",
+    borderRadius: 8,
+    // Ajout des dimensions pour ajuster la taille
+    height: 40, // Ajustez cette valeur selon vos besoins
+    width: "auto", // Permet à la largeur de s'ajuster automatiquement
   },
-  filterOptionText: {
-    fontSize: 14,
-    color: "#333",
+  sortText: {
+    color: "#fff",
+    marginRight: 5,
   },
-  listContainer: {
-    flexGrow: 1,
+  filterButton: {
+    padding: 10,
+    backgroundColor: "#007BFF",
+    borderRadius: 8,
   },
 });
+
+export default SessionsList;
