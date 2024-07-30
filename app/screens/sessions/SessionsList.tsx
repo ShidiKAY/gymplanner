@@ -63,6 +63,15 @@ const SessionsList: React.FC<{ navigation: any }> = ({ navigation }) => {
     // Show confirmation modal
   };
 
+  const handleCreateFrom = (sessionId: number) => {
+    const session = sessions.find((e) => e.id === sessionId);
+    if (session) {
+      navigation.navigate("screens/sessions/SessionCreateFrom", {
+        createFromSession: session,
+      });
+    }
+  };
+
   const handleDeleteConfirm = () => {
     if (selectedSessionId !== null) {
       deleteSession(selectedSessionId);
@@ -245,6 +254,7 @@ const SessionsList: React.FC<{ navigation: any }> = ({ navigation }) => {
                 onPress={() => handlePress(item.id)}
                 onEdit={() => handleEdit(item.id)}
                 onDelete={() => handleDelete(item.id)}
+                onCreateFrom={() => handleCreateFrom(item.id)}
               />
             )}
             ListEmptyComponent={

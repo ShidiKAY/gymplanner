@@ -298,6 +298,7 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
                   onPress={handlePress}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
+                  onCreateFrom={() => handleCreateFrom(item.id)}
                   bodyPart={bodyPart}
                   equipment={equipment}
                 />
