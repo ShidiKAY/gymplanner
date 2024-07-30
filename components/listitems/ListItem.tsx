@@ -44,7 +44,9 @@ const styles = StyleSheet.create({
   touchable: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
+    // padding: 10,
+    marginBottom: 2,
+    backgroundColor: "#fff",
   },
   item: {
     flexDirection: "row",
@@ -52,9 +54,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   thumbnail: {
-    width: 60,
-    height: 60,
-    borderRadius: 5,
+    width: 80,
+    height: 80,
+    // borderRadius: 5,
     marginRight: 10,
   },
   textContainer: {

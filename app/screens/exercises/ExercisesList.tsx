@@ -25,6 +25,10 @@ import FilterModal from "@/components/FilterModal";
 import SortModal from "@/components/SortModal";
 import SectionHeader from "@/components/listitems/SectionHeader";
 import ListItem from "@/components/listitems/ListItem";
+import {
+  GestureHandlerRootView,
+  RectButton,
+} from "react-native-gesture-handler";
 
 const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [filteredExercises, setFilteredExercises] =
@@ -39,6 +43,7 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [selectedEquipment, setSelectedEquipment] = useState<number[]>([]);
   const [sortBy, setSortBy] = useState<string>("alphabetical");
 
+  const scrollEnabled = useRef(true);
   const modalOpacity = useRef(new Animated.Value(0)).current;
   const modalTranslateY = useRef(new Animated.Value(300)).current;
 
@@ -192,7 +197,7 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
         onDelete={() => handleDelete(item.id)}
         onCreateFrom={() => handleCreateFrom(item.id)}
       >
-        <TouchableOpacity
+        <RectButton
           onPress={() => handlePress(item.id)}
           activeOpacity={0.9}
           style={styles.touchable}
@@ -210,7 +215,7 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
               </Text>
             </View>
           </View>
-        </TouchableOpacity>
+        </RectButton>
       </SwipeableRow>
     );
   };
@@ -247,21 +252,22 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <SearchBar onSearch={handleSearch} />
-      <View style={styles.sortFilterContainer}>
-        <TouchableOpacity style={styles.filterButton} onPress={handleFilter}>
-          <FontAwesome name="filter" size={24} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleSort} style={styles.sortButton}>
-          <Text style={styles.sortText}>
-            Trier par {sortBy === "alphabetical" ? "A-Z" : "Partie du corps"}
-          </Text>
-          {/* <FontAwesome name="sort-down" size={24} color="white" /> */}
-        </TouchableOpacity>
-      </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
+        <SearchBar onSearch={handleSearch} />
+        <View style={styles.sortFilterContainer}>
+          <RectButton style={styles.filterButton} onPress={handleFilter}>
+            <FontAwesome name="filter" size={24} color="white" />
+          </RectButton>
+          <RectButton onPress={handleSort} style={styles.sortButton}>
+            <Text style={styles.sortText}>
+              Trier par {sortBy === "alphabetical" ? "A-Z" : "Partie du corps"}
+            </Text>
+            {/* <FontAwesome name="sort-down" size={24} color="white" /> */}
+          </RectButton>
+        </View>
 
-      {/* <GestureHandlerWrapper>
+        {/* <GestureHandlerWrapper>
         <SectionList
           sections={groupedData()}
           keyExtractor={(item) => item.id?.toString() || ""}
@@ -270,110 +276,114 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
           contentContainerStyle={styles.listContainer}
         />
       </GestureHandlerWrapper> */}
+        <GestureHandlerWrapper>
+          <SectionList
+            sections={groupedData()}
+            keyExtractor={(item) => item.id?.toString() || ""}
+            renderItem={renderItem}
+            contentContainerStyle={styles.listContainer}
+            renderSectionHeader={({ section: { title } }) => (
+              <SectionHeader title={title} />
+            )}
+            scrollEnabled={scrollEnabled}
+            renderItem={({ item }) => {
+              const bodyPart = bodyParts.find(
+                (part) => part.id === item.bodyPartId
+              );
+              const equipment = item.equipmentId
+                ? equipments.find((equip) => equip.id === item.equipmentId)
+                : null;
+              return (
+                <ListItem
+                  item={item}
+                  onPress={handlePress}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  bodyPart={bodyPart}
+                  equipment={equipment}
+                />
+              );
+            }}
+            scrollEnabled={scrollEnabled.current}
+            ListEmptyComponent={
+              <Text style={styles.emptyText}>No exercises found</Text>
+            }
+          />
+        </GestureHandlerWrapper>
 
-      <SectionList
-        sections={groupedData()}
-        keyExtractor={(item) => item.id?.toString() || ""}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listContainer}
-        renderSectionHeader={({ section: { title } }) => (
-          <SectionHeader title={title} />
-        )}
-        renderItem={({ item }) => {
-          const bodyPart = bodyParts.find(
-            (part) => part.id === item.bodyPartId
-          );
-          const equipment = item.equipmentId
-            ? equipments.find((equip) => equip.id === item.equipmentId)
-            : null;
-          return (
-            <ListItem
-              item={item}
-              onPress={handlePress}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              bodyPart={bodyPart}
-              equipment={equipment}
-            />
-          );
-        }}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>No exercises found</Text>
-        }
-      />
+        <FloatingActionButton onPress={handleAdd} />
 
-      <FloatingActionButton onPress={handleAdd} />
+        <FilterModal
+          visible={isFilterModalVisible}
+          bodyParts={bodyParts}
+          equipments={equipments}
+          selectedBodyParts={selectedBodyParts}
+          selectedEquipment={selectedEquipment}
+          onBodyPartSelect={(id) =>
+            setSelectedBodyParts((prev) =>
+              prev.includes(id)
+                ? prev.filter((partId) => partId !== id)
+                : [...prev, id]
+            )
+          }
+          onEquipmentSelect={(id) =>
+            setSelectedEquipment((prev) =>
+              prev.includes(id)
+                ? prev.filter((equipId) => equipId !== id)
+                : [...prev, id]
+            )
+          }
+          onApplyFilters={applyFilters}
+          onResetFilters={resetFilters}
+        />
 
-      <FilterModal
-        visible={isFilterModalVisible}
-        bodyParts={bodyParts}
-        equipments={equipments}
-        selectedBodyParts={selectedBodyParts}
-        selectedEquipment={selectedEquipment}
-        onBodyPartSelect={(id) =>
-          setSelectedBodyParts((prev) =>
-            prev.includes(id)
-              ? prev.filter((partId) => partId !== id)
-              : [...prev, id]
-          )
-        }
-        onEquipmentSelect={(id) =>
-          setSelectedEquipment((prev) =>
-            prev.includes(id)
-              ? prev.filter((equipId) => equipId !== id)
-              : [...prev, id]
-          )
-        }
-        onApplyFilters={applyFilters}
-        onResetFilters={resetFilters}
-      />
+        <SortModal
+          visible={isSortModalVisible}
+          sortBy={sortBy}
+          onSort={applySort}
+          onResetSort={resetSort}
+        />
 
-      <SortModal
-        visible={isSortModalVisible}
-        sortBy={sortBy}
-        onSort={applySort}
-        onResetSort={resetSort}
-      />
-
-      <Modal visible={isModalVisible} transparent={true} animationType="fade">
-        <View style={styles.modalContainer}>
-          <Animated.View
-            style={[
-              styles.modalContent,
-              {
-                opacity: modalOpacity,
-                transform: [{ translateY: modalTranslateY }],
-              },
-            ]}
-          >
-            <Text style={styles.modalText}>
-              Are you sure you want to delete this exercise?
-            </Text>
-            <View style={styles.modalButtonContainer}>
-              <TouchableOpacity
-                onPress={handleDeleteConfirm}
-                style={styles.modalButton}
-              >
-                <Text style={styles.modalButtonText}>Yes</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleDeleteCancel}
-                style={styles.modalButton}
-              >
-                <Text style={styles.modalButtonText}>No</Text>
-              </TouchableOpacity>
-            </View>
-          </Animated.View>
-        </View>
-      </Modal>
-    </SafeAreaView>
+        <Modal visible={isModalVisible} transparent={true} animationType="fade">
+          <View style={styles.modalContainer}>
+            <Animated.View
+              style={[
+                styles.modalContent,
+                {
+                  opacity: modalOpacity,
+                  transform: [{ translateY: modalTranslateY }],
+                },
+              ]}
+            >
+              <Text style={styles.modalText}>
+                Are you sure you want to delete this exercise?
+              </Text>
+              <View style={styles.modalButtonContainer}>
+                <RectButton
+                  onPress={handleDeleteConfirm}
+                  style={styles.modalButton}
+                >
+                  <Text style={styles.modalButtonText}>Yes</Text>
+                </RectButton>
+                <RectButton
+                  onPress={handleDeleteCancel}
+                  style={styles.modalButton}
+                >
+                  <Text style={styles.modalButtonText}>No</Text>
+                </RectButton>
+              </View>
+            </Animated.View>
+          </View>
+        </Modal>
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
   },
   searchBarContainer: {
     flexDirection: "row",

@@ -22,6 +22,10 @@ import FilterModal from "@/components/FilterModal";
 import SortModal from "@/components/SortModal";
 import ListItem from "@/components/listitems/ListItem";
 import SectionHeader from "@/components/listitems/SectionHeader";
+import {
+  GestureHandlerRootView,
+  RectButton,
+} from "react-native-gesture-handler";
 
 const SessionsList: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [filteredSessions, setFilteredSessions] = useState(sessions);
@@ -109,6 +113,41 @@ const SessionsList: React.FC<{ navigation: any }> = ({ navigation }) => {
     setIsSortModalVisible(true);
   };
 
+  const getSections = (exercises, sortBy) => {
+    if (sortBy === "alphabetical") {
+      const groupedByLetter = exercises.reduce((acc, exercise) => {
+        const firstLetter = exercise.title.charAt(0).toUpperCase();
+        if (!acc[firstLetter]) {
+          acc[firstLetter] = [];
+        }
+        acc[firstLetter].push(exercise);
+        return acc;
+      }, {});
+
+      return Object.keys(groupedByLetter).map((letter) => ({
+        title: letter,
+        data: groupedByLetter[letter],
+      }));
+    } else if (sortBy === "bodyPart") {
+      const groupedByBodyPart = exercises.reduce((acc, exercise) => {
+        const bodyPart =
+          bodyParts.find((part) => part.id === exercise.bodyPartId)?.nameFr ||
+          "Uncategorized";
+        if (!acc[bodyPart]) {
+          acc[bodyPart] = [];
+        }
+        acc[bodyPart].push(exercise);
+        return acc;
+      }, {});
+
+      return Object.keys(groupedByBodyPart).map((bodyPart) => ({
+        title: bodyPart,
+        data: groupedByBodyPart[bodyPart],
+      }));
+    }
+    return []; // Default empty array if sortBy is not recognized
+  };
+
   const applySort = (criteria: string) => {
     setSortBy(criteria);
     let sorted = [...filteredSessions];
@@ -147,7 +186,7 @@ const SessionsList: React.FC<{ navigation: any }> = ({ navigation }) => {
         onEdit={() => handleEdit(item.id)}
         onDelete={() => handleDelete(item.id)}
       >
-        <TouchableOpacity onPress={() => handlePress(item.id)}>
+        <RectButton onPress={() => handlePress(item.id)}>
           <View style={styles.itemContainer}>
             <Text style={styles.itemTitle}>{item.title}</Text>
             {bodyPart && (
@@ -168,99 +207,103 @@ const SessionsList: React.FC<{ navigation: any }> = ({ navigation }) => {
               </View>
             )}
           </View>
-        </TouchableOpacity>
+        </RectButton>
       </SwipeableRow>
     );
   };
+  const sections = getSections(filteredSessions, sortBy);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <SearchBar onSearch={handleSearch} />
-      <View style={styles.sortFilterContainer}>
-        <TouchableOpacity style={styles.filterButton} onPress={handleFilter}>
-          <FontAwesome name="filter" size={24} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleSort} style={styles.sortButton}>
-          <Text style={styles.sortText}>
-            Trier par {sortBy === "alphabetical" ? "A-Z" : "Partie du corps"}
-          </Text>
-          {/* <FontAwesome name="sort-down" size={24} color="white" /> */}
-        </TouchableOpacity>
-      </View>
-      <SectionList
-        sections={filteredSessions.map((session) => ({
-          title:
-            categories.find((cat) => cat.id === session.categoryId)?.name ||
-            "Uncategorized",
-          data: [session],
-        }))}
-        keyExtractor={(item) => item.id.toString()}
-        renderSectionHeader={({ section: { title } }) => (
-          <SectionHeader title={title} />
-        )}
-        renderItem={({ item }) => (
-          <ListItem
-            item={item}
-            onPress={() => handlePress(item.id)}
-            onEdit={() => handleEdit(item.id)}
-            onDelete={() => handleDelete(item.id)}
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
+        <SearchBar onSearch={handleSearch} />
+        <View style={styles.sortFilterContainer}>
+          <RectButton style={styles.filterButton} onPress={handleFilter}>
+            <FontAwesome name="filter" size={24} color="white" />
+          </RectButton>
+          <RectButton onPress={handleSort} style={styles.sortButton}>
+            <Text style={styles.sortText}>
+              Trier par {sortBy === "alphabetical" ? "A-Z" : "Partie du corps"}
+            </Text>
+            {/* <FontAwesome name="sort-down" size={24} color="white" /> */}
+          </RectButton>
+        </View>
+        <GestureHandlerRootView>
+          <SectionList
+            sections={sections}
+            keyExtractor={(item) => item.id.toString()}
+            renderSectionHeader={({ section: { title } }) => (
+              <SectionHeader title={title} />
+            )}
+            keyExtractor={(item) => item.id.toString()}
+            renderSectionHeader={({ section: { title } }) => (
+              <SectionHeader title={title} />
+            )}
+            renderItem={({ item }) => (
+              <ListItem
+                item={item}
+                onPress={() => handlePress(item.id)}
+                onEdit={() => handleEdit(item.id)}
+                onDelete={() => handleDelete(item.id)}
+              />
+            )}
+            ListEmptyComponent={
+              <Text style={styles.emptyText}>No sessions found</Text>
+            }
           />
-        )}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>No sessions found</Text>
-        }
-      />
-      <FloatingActionButton onPress={handleAdd} />
+        </GestureHandlerRootView>
+        <FloatingActionButton onPress={handleAdd} />
 
-      <FilterModal
-        visible={isFilterModalVisible}
-        bodyParts={bodyParts}
-        equipments={equipments}
-        selectedBodyParts={selectedBodyParts}
-        selectedEquipment={selectedEquipment}
-        onBodyPartSelect={(id) =>
-          setSelectedBodyParts((prev) =>
-            prev.includes(id)
-              ? prev.filter((partId) => partId !== id)
-              : [...prev, id]
-          )
-        }
-        onEquipmentSelect={(id) =>
-          setSelectedEquipment((prev) =>
-            prev.includes(id)
-              ? prev.filter((equipId) => equipId !== id)
-              : [...prev, id]
-          )
-        }
-        onApplyFilters={applyFilters}
-        onResetFilters={resetFilters}
-      />
+        <FilterModal
+          visible={isFilterModalVisible}
+          bodyParts={bodyParts}
+          equipments={equipments}
+          selectedBodyParts={selectedBodyParts}
+          selectedEquipment={selectedEquipment}
+          onBodyPartSelect={(id) =>
+            setSelectedBodyParts((prev) =>
+              prev.includes(id)
+                ? prev.filter((partId) => partId !== id)
+                : [...prev, id]
+            )
+          }
+          onEquipmentSelect={(id) =>
+            setSelectedEquipment((prev) =>
+              prev.includes(id)
+                ? prev.filter((equipId) => equipId !== id)
+                : [...prev, id]
+            )
+          }
+          onApplyFilters={applyFilters}
+          onResetFilters={resetFilters}
+        />
 
-      <SortModal
-        visible={isSortModalVisible}
-        sortBy={sortBy}
-        onSort={applySort}
-        onResetSort={resetSort}
-      />
+        <SortModal
+          visible={isSortModalVisible}
+          sortBy={sortBy}
+          onSort={applySort}
+          onResetSort={resetSort}
+        />
 
-      <ModalComponent
-        visible={selectedSessionId !== null}
-        onClose={handleDeleteCancel}
-        onConfirm={handleDeleteConfirm}
-        title="Confirm Delete"
-        confirmText="Delete"
-        cancelText="Cancel"
-      >
-        <Text>Are you sure you want to delete this session?</Text>
-      </ModalComponent>
-    </SafeAreaView>
+        <ModalComponent
+          visible={selectedSessionId !== null}
+          onClose={handleDeleteCancel}
+          onConfirm={handleDeleteConfirm}
+          title="Confirm Delete"
+          confirmText="Delete"
+          cancelText="Cancel"
+        >
+          <Text>Are you sure you want to delete this session?</Text>
+        </ModalComponent>
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
   },
   sectionHeader: {
     backgroundColor: "#f5f5f5",
