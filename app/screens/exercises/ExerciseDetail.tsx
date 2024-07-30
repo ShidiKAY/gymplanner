@@ -55,9 +55,6 @@ const ExerciseDetail: React.FC = () => {
 
     // Sélectionner l'URL d'affichage en fonction des erreurs
     const displayUri = uri && imageErrors.has(uri) ? placeholder : uri;
-
-    console.log("ppp " + placeholder);
-    console.log("ddd " + uri);
     return uri && imageErrors.has(uri) ? (
       <View style={styles.imagePlaceholder}>
         <Text style={styles.imagePlaceholderText}>Image non disponible</Text>

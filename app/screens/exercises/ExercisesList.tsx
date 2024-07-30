@@ -165,7 +165,6 @@ const ExerciseList: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   const applySort = (criteria: string) => {
-    console.log(criteria);
     setSortBy(criteria);
     let sorted = [...filteredExercises];
     if (criteria === "alphabetical") {
