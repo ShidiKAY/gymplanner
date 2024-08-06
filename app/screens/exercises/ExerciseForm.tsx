@@ -5,7 +5,7 @@ import {
   TextInput,
   Button,
   StyleSheet,
-  ScrollView,
+  FlatList,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
@@ -63,9 +63,9 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ exercise, onSave }) => {
     onSave(newExercise);
   };
 
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {currentStep === 1 && (
+  const renderForm = () => {
+    if (currentStep === 1) {
+      return (
         <View style={styles.stepContainer}>
           <TextInput
             style={styles.input}
@@ -92,8 +92,9 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ exercise, onSave }) => {
           </Picker>
           <Button title="Next" onPress={handleNext} />
         </View>
-      )}
-      {currentStep === 2 && (
+      );
+    } else if (currentStep === 2) {
+      return (
         <View style={styles.stepContainer}>
           <Text>Repetitions:</Text>
           <Slider
@@ -144,8 +145,9 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ exercise, onSave }) => {
             <Button title="Next" onPress={handleNext} />
           </View>
         </View>
-      )}
-      {currentStep === 3 && (
+      );
+    } else if (currentStep === 3) {
+      return (
         <View style={styles.stepContainer}>
           <Text style={styles.header}>Confirm your details</Text>
           <Text>Title: {title}</Text>
@@ -163,8 +165,18 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ exercise, onSave }) => {
             <Button title="Save" onPress={handleSave} />
           </View>
         </View>
-      )}
-    </ScrollView>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <FlatList
+      data={[{ key: "form" }]}
+      renderItem={renderForm}
+      keyExtractor={(item) => item.key}
+      contentContainerStyle={styles.container}
+    />
   );
 };
 
