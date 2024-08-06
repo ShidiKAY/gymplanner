@@ -12,12 +12,12 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { exercises } from "@/app/data/exercises";
-import { Exercise } from "@/types/ExerciseTypes";
 import {
+  Session,
   SessionExerciseSet,
   ExerciseGroup,
-  Session,
 } from "@/types/SessionTypes";
+import { Exercise } from "@/types/ExerciseTypes";
 
 const availableExercises = exercises;
 
@@ -39,14 +39,15 @@ const SessionForm: React.FC<SessionFormProps> = ({ session, onSave }) => {
   const [exerciseSets, setExerciseSets] = useState<{
     [key: number]: SessionExerciseSet[];
   }>({});
+  const [exerciseModes, setExerciseModes] = useState<{
+    [key: number]: "reps" | "time";
+  }>({});
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [mode, setMode] = useState<"reps" | "time">("reps");
 
   useEffect(() => {
     if (session) {
       setSessionTitle(session.title);
 
-      // Trouver les exercices associés à la session
       const exercisesForSession = session.exerciseGroups.flatMap(
         (group: ExerciseGroup) =>
           group.exercises
@@ -58,8 +59,9 @@ const SessionForm: React.FC<SessionFormProps> = ({ session, onSave }) => {
 
       setSelectedExercises(exercisesForSession);
 
-      // Initialiser les sets d'exercice
       const initialSets: { [key: number]: SessionExerciseSet[] } = {};
+      const initialModes: { [key: number]: "reps" | "time" } = {};
+
       session.exerciseGroups.forEach((group) => {
         group.exercises.forEach((exercise) => {
           const exerciseSets =
@@ -91,10 +93,12 @@ const SessionForm: React.FC<SessionFormProps> = ({ session, onSave }) => {
                 ];
 
           initialSets[exercise.exerciseId] = exerciseSets;
+          initialModes[exercise.exerciseId] = "reps"; // Initialisation par défaut
         });
       });
 
       setExerciseSets(initialSets);
+      setExerciseModes(initialModes);
     }
   }, [session]);
 
@@ -134,7 +138,7 @@ const SessionForm: React.FC<SessionFormProps> = ({ session, onSave }) => {
         sets.reduce((sum, set) => {
           return (
             sum +
-            (mode === "time"
+            (exerciseModes[exercise.id] === "time"
               ? (parseFloat(set.duration) || 0) + (parseFloat(set.rest) || 0)
               : 0)
           );
@@ -148,6 +152,10 @@ const SessionForm: React.FC<SessionFormProps> = ({ session, onSave }) => {
     setExerciseSets((prev) => ({
       ...prev,
       [exercise.id]: Array(4).fill(defaultSetValues),
+    }));
+    setExerciseModes((prev) => ({
+      ...prev,
+      [exercise.id]: "reps",
     }));
     setIsModalVisible(false);
   };
@@ -179,6 +187,13 @@ const SessionForm: React.FC<SessionFormProps> = ({ session, onSave }) => {
     </TouchableOpacity>
   );
 
+  const handleModeChange = (exerciseId: number) => {
+    setExerciseModes((prev) => ({
+      ...prev,
+      [exerciseId]: prev[exerciseId] === "reps" ? "time" : "reps",
+    }));
+  };
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -205,7 +220,6 @@ const SessionForm: React.FC<SessionFormProps> = ({ session, onSave }) => {
               />
               <View style={styles.exerciseInfo}>
                 <Text style={styles.exerciseTitle}>{exercise.title}</Text>
-
                 <Text style={styles.exerciceDescription} numberOfLines={2}>
                   {exercise.description}
                 </Text>
@@ -213,13 +227,19 @@ const SessionForm: React.FC<SessionFormProps> = ({ session, onSave }) => {
                 {exercise.equipmentName && (
                   <Text>{exercise.equipmentName}</Text>
                 )}
+                <Button
+                  title={`Mode: ${
+                    exerciseModes[exercise.id] === "reps" ? "Reps" : "Durée"
+                  }`}
+                  onPress={() => handleModeChange(exercise.id)}
+                />
               </View>
             </View>
             <View style={styles.setList}>
               <View style={styles.tableHeader}>
                 <Text style={styles.tableHeaderText}>Set</Text>
                 <Text style={styles.tableHeaderText}>
-                  {mode === "reps" ? "Reps" : "Durée"}
+                  {exerciseModes[exercise.id] === "reps" ? "Reps" : "Durée"}
                 </Text>
                 <Text style={styles.tableHeaderText}>kg</Text>
                 <Text style={styles.tableHeaderText}>Repos</Text>
@@ -230,10 +250,12 @@ const SessionForm: React.FC<SessionFormProps> = ({ session, onSave }) => {
                   <Text>{index + 1}</Text>
                   <TextInput
                     style={styles.setInput}
-                    placeholder={mode === "reps" ? "Reps" : "Durée"}
+                    placeholder={
+                      exerciseModes[exercise.id] === "reps" ? "Reps" : "Durée"
+                    }
                     keyboardType="numeric"
                     value={
-                      mode === "reps"
+                      exerciseModes[exercise.id] === "reps"
                         ? set.reps.toString()
                         : set.duration.toString()
                     }
@@ -242,7 +264,9 @@ const SessionForm: React.FC<SessionFormProps> = ({ session, onSave }) => {
                         text,
                         exercise.id,
                         index,
-                        mode === "reps" ? "reps" : "duration"
+                        exerciseModes[exercise.id] === "reps"
+                          ? "reps"
+                          : "duration"
                       )
                     }
                   />
@@ -278,6 +302,23 @@ const SessionForm: React.FC<SessionFormProps> = ({ session, onSave }) => {
           </View>
         ))}
       </ScrollView>
+
+      <Button
+        title="Enregistrer la session"
+        onPress={() =>
+          onSave({
+            ...session!,
+            title: sessionTitle,
+            exerciseGroups: selectedExercises.map((exercise) => ({
+              type: "single", // Ajustez selon vos données
+              exercises: exerciseSets[exercise.id].map((set) => ({
+                exerciseId: exercise.id,
+                ...set,
+              })),
+            })),
+          })
+        }
+      />
 
       {/* Modal pour ajouter un exercice */}
       <Modal visible={isModalVisible} transparent={true}>
