@@ -12,9 +12,12 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { exercises } from "@/app/data/exercises";
-import { sessions } from "@/app/data/sessions"; // Importez les sessions ici
 import { Exercise } from "@/types/ExerciseTypes";
-import { SessionExerciseSet, ExerciseGroup } from "@/types/SessionTypes";
+import {
+  SessionExerciseSet,
+  ExerciseGroup,
+  Session,
+} from "@/types/SessionTypes";
 
 const availableExercises = exercises;
 
@@ -25,7 +28,12 @@ const defaultSetValues = {
   rest: "0.00",
 };
 
-const SessionForm: React.FC = () => {
+interface SessionFormProps {
+  session?: Session;
+  onSave: (session: Session) => void;
+}
+
+const SessionForm: React.FC<SessionFormProps> = ({ session, onSave }) => {
   const [sessionTitle, setSessionTitle] = useState("Titre de la session");
   const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
   const [exerciseSets, setExerciseSets] = useState<{
@@ -35,60 +43,60 @@ const SessionForm: React.FC = () => {
   const [mode, setMode] = useState<"reps" | "time">("reps");
 
   useEffect(() => {
-    // Charger les données de la première session comme exemple
-    const initialSession = sessions[0]; // Ou une autre session selon vos besoins
-    setSessionTitle(initialSession.title);
+    if (session) {
+      setSessionTitle(session.title);
 
-    // Trouver les exercices associés à la session
-    const exercisesForSession = initialSession.exerciseGroups.flatMap(
-      (group: ExerciseGroup) =>
-        group.exercises
-          .map((exercise) =>
-            availableExercises.find((ex) => ex.id === exercise.exerciseId)
-          )
-          .filter((exercise) => exercise !== undefined) as Exercise[]
-    );
+      // Trouver les exercices associés à la session
+      const exercisesForSession = session.exerciseGroups.flatMap(
+        (group: ExerciseGroup) =>
+          group.exercises
+            .map((exercise) =>
+              availableExercises.find((ex) => ex.id === exercise.exerciseId)
+            )
+            .filter((exercise) => exercise !== undefined) as Exercise[]
+      );
 
-    setSelectedExercises(exercisesForSession);
+      setSelectedExercises(exercisesForSession);
 
-    // Initialiser les sets d'exercice
-    const initialSets: { [key: number]: SessionExerciseSet[] } = {};
-    initialSession.exerciseGroups.forEach((group) => {
-      group.exercises.forEach((exercise) => {
-        const exerciseSets =
-          group.type === "bi-set"
-            ? [
-                {
-                  reps: 0,
-                  duration: "0.00",
-                  intensity: exercise.intensity,
-                  rest: "0.00",
-                },
-                {
-                  reps: 0,
-                  duration: "0.00",
-                  intensity: exercise.intensity,
-                  rest: "0.00",
-                },
-              ]
-            : [
-                {
-                  reps: exercise.repetitions,
-                  duration:
-                    group.type === "single"
-                      ? "0.00"
-                      : exercise.durationEnd.toString(),
-                  intensity: exercise.intensity,
-                  rest: exercise.restTime.toString(),
-                },
-              ];
+      // Initialiser les sets d'exercice
+      const initialSets: { [key: number]: SessionExerciseSet[] } = {};
+      session.exerciseGroups.forEach((group) => {
+        group.exercises.forEach((exercise) => {
+          const exerciseSets =
+            group.type === "bi-set"
+              ? [
+                  {
+                    reps: 0,
+                    duration: "0.00",
+                    intensity: exercise.intensity,
+                    rest: "0.00",
+                  },
+                  {
+                    reps: 0,
+                    duration: "0.00",
+                    intensity: exercise.intensity,
+                    rest: "0.00",
+                  },
+                ]
+              : [
+                  {
+                    reps: exercise.repetitions,
+                    duration:
+                      group.type === "single"
+                        ? "0.00"
+                        : exercise.durationEnd.toString(),
+                    intensity: exercise.intensity,
+                    rest: exercise.restTime.toString(),
+                  },
+                ];
 
-        initialSets[exercise.exerciseId] = exerciseSets;
+          initialSets[exercise.exerciseId] = exerciseSets;
+        });
       });
-    });
 
-    setExerciseSets(initialSets);
-  }, []);
+      setExerciseSets(initialSets);
+    }
+  }, [session]);
 
   const addSetToExercise = (exerciseId: number) => {
     const lastSet =
@@ -314,7 +322,6 @@ const styles = StyleSheet.create({
   thumbnail: {
     width: 60,
     height: 60,
-    // borderRadius: 5,
     marginRight: 10,
   },
   exerciseInfo: {
@@ -324,14 +331,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-
   exerciceDescription: {
     fontSize: 14,
     color: "#555",
-  },
-  exerciceDetailText: {
-    fontSize: 12,
-    color: "#888",
   },
   setList: {
     marginBottom: 16,
@@ -361,9 +363,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 16,
     justifyContent: "center",
-  },
-  modalList: {
-    maxHeight: "80%",
   },
   exerciseItem: {
     flexDirection: "row",

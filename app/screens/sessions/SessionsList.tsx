@@ -26,9 +26,10 @@ import {
   GestureHandlerRootView,
   RectButton,
 } from "react-native-gesture-handler";
+import { Session } from "@/types/SessionTypes";
 
 const SessionsList: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [filteredSessions, setFilteredSessions] = useState(sessions);
+  const [filteredSessions, setFilteredSessions] = useState<Session[]>(sessions);
   const [selectedSessionId, setSelectedSessionId] = useState<number | null>(
     null
   );
