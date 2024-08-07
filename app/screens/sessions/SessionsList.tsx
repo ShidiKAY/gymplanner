@@ -68,6 +68,7 @@ const SessionsList: React.FC<{ navigation: any }> = ({ navigation }) => {
     const session = sessions.find((e) => e.id === sessionId);
     if (session) {
       session.title = "Copy of " + session.title;
+
       navigation.navigate("screens/sessions/SessionCreateFrom", {
         createFromSession: session,
       });
