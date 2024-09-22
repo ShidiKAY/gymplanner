@@ -1,24 +1,41 @@
 // types/ProgramTypes.ts
-export interface Session {
+import { Session } from "@/types/SessionTypes";
+
+export type Microcycle = {
   id: number;
   title: string;
-  // autres propriétés nécessaires
-}
+  description?: string; // Ajouté pour la description
+  startDate: string;
+  endDate: string;
+  sessions: Session[];
+  objective: "development" | "maintenance" | "recovery";
+};
 
-export interface ProgramWeek {
+export type Mesocycle = {
+  id: number;
+  title: string;
+  description?: string; // Ajouté pour la description
+  startDate: string;
+  endDate: string;
+  microcycles: Microcycle[];
+  theme: string;
+};
+
+export type Macrocycle = {
+  id: number;
+  title: string;
+  description?: string; // Ajouté pour la description
+  startDate: string;
+  endDate: string;
+  mesocycles: Mesocycle[];
+  mainGoal: string;
+};
+
+export type TrainingProgram = {
   id: number;
   name: string;
-  days: {
-    [day: string]: {
-      type: "push" | "pull" | "legs";
-      sessionIds: number[]; // Liste des IDs des sessions pour ce jour
-    };
-  };
-}
-
-export interface TrainingProgram {
-  id: number;
-  title: string;
-  weeks: ProgramWeek[];
-  recurrence: "weekly" | "biweekly" | "monthly"; // Récurrence du programme
-}
+  description: string;
+  macrocycles: Macrocycle[];
+  createdAt: string;
+  updatedAt: string;
+};

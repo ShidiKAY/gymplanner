@@ -1,147 +1,90 @@
-// data/programs.ts
-import { TrainingProgram, ProgramWeek } from "@/types/ProgramTypes";
+import { TrainingProgram } from "@/types/ProgramTypes";
 
-// Définition des sessions d'exemple
-const exampleSessions = [
+let programs: TrainingProgram[] = [
   {
     id: 1,
-    title: "Session Push A",
-    description: "Entraînement pour le haut du corps, focus sur les poussées.",
-  },
-  {
-    id: 2,
-    title: "Session Pull A",
-    description: "Entraînement pour le haut du corps, focus sur les tirages.",
-  },
-  {
-    id: 3,
-    title: "Session Legs A",
-    description: "Entraînement pour le bas du corps.",
-  },
-  {
-    id: 4,
-    title: "Session Push B",
-    description:
-      "Variation d'entraînement pour le haut du corps, focus sur les poussées.",
-  },
-  {
-    id: 5,
-    title: "Session Pull B",
-    description:
-      "Variation d'entraînement pour le haut du corps, focus sur les tirages.",
-  },
-  {
-    id: 6,
-    title: "Session Legs B",
-    description: "Variation d'entraînement pour le bas du corps.",
-  },
-];
-
-// Exemple de semaines
-const exampleWeeks: ProgramWeek[] = [
-  {
-    id: 1,
-    name: "Semaine 1",
-    days: {
-      Lundi: { type: "push", sessionIds: [1] },
-      Mardi: { type: "legs", sessionIds: [3] },
-      Mercredi: { type: "pull", sessionIds: [2] },
-      Jeudi: { type: "push", sessionIds: [4] },
-      Vendredi: { type: "legs", sessionIds: [6] },
-      Samedi: { type: "pull", sessionIds: [5] },
-      Dimanche: { type: "rest", sessionIds: [] },
-    },
-  },
-  {
-    id: 2,
-    name: "Semaine 2",
-    days: {
-      Lundi: { type: "push", sessionIds: [4] },
-      Mardi: { type: "legs", sessionIds: [6] },
-      Mercredi: { type: "pull", sessionIds: [5] },
-      Jeudi: { type: "push", sessionIds: [1] },
-      Vendredi: { type: "legs", sessionIds: [3] },
-      Samedi: { type: "pull", sessionIds: [2] },
-      Dimanche: { type: "rest", sessionIds: [] },
-    },
-  },
-];
-
-// Programmes d'exemple
-export const programs: TrainingProgram[] = [
-  {
-    id: 1,
-    title: "Programme Full Body 4 Semaines",
-    weeks: exampleWeeks,
-    recurrence: "Toutes les semaines pendant 4 semaines",
-  },
-  {
-    id: 2,
-    title: "Programme Force & Endurance",
-    weeks: [
+    name: "Programme de Force",
+    description: "Programme conçu pour développer la force maximale.",
+    macrocycles: [
       {
-        id: 3,
-        name: "Semaine A",
-        days: {
-          Lundi: { type: "push", sessionIds: [1, 4] },
-          Mardi: { type: "pull", sessionIds: [2, 5] },
-          Mercredi: { type: "legs", sessionIds: [3, 6] },
-          Jeudi: { type: "push", sessionIds: [1] },
-          Vendredi: { type: "pull", sessionIds: [2] },
-          Samedi: { type: "legs", sessionIds: [3] },
-          Dimanche: { type: "rest", sessionIds: [] },
-        },
+        id: 1,
+        title: "Macrocycle de Force",
+        startDate: "2024-01-01",
+        endDate: "2024-06-30",
+        mesocycles: [
+          {
+            id: 1,
+            title: "Mésocycle d'Hypertrophie",
+            startDate: "2024-01-01",
+            endDate: "2024-02-28",
+            microcycles: [
+              {
+                id: 1,
+                title: "Microcycle 1",
+                startDate: "2024-01-01",
+                endDate: "2024-01-07",
+                sessions: [],
+                objective: "development",
+              },
+              // Ajoutez plus de microcycles ici
+            ],
+            theme: "hypertrophie",
+          },
+          // Ajoutez plus de mésocycles ici
+        ],
+        mainGoal: "Augmentation de la force maximale",
       },
+      // Ajoutez plus de macrocycles ici
     ],
-    recurrence: "Chaque semaine",
+    createdAt: "2023-12-01T12:00:00Z",
+    updatedAt: "2023-12-01T12:00:00Z",
   },
-  {
-    id: 3,
-    title: "Programme Hypertrophie",
-    weeks: [
-      {
-        id: 4,
-        name: "Semaine 1",
-        days: {
-          Lundi: { type: "push", sessionIds: [1] },
-          Mardi: { type: "legs", sessionIds: [3] },
-          Mercredi: { type: "pull", sessionIds: [2] },
-          Jeudi: { type: "push", sessionIds: [4] },
-          Vendredi: { type: "legs", sessionIds: [6] },
-          Samedi: { type: "pull", sessionIds: [5] },
-          Dimanche: { type: "rest", sessionIds: [] },
-        },
-      },
-      {
-        id: 5,
-        name: "Semaine 2",
-        days: {
-          Lundi: { type: "push", sessionIds: [4] },
-          Mardi: { type: "legs", sessionIds: [6] },
-          Mercredi: { type: "pull", sessionIds: [5] },
-          Jeudi: { type: "push", sessionIds: [1] },
-          Vendredi: { type: "legs", sessionIds: [3] },
-          Samedi: { type: "pull", sessionIds: [2] },
-          Dimanche: { type: "rest", sessionIds: [] },
-        },
-      },
-    ],
-    recurrence: "Chaque semaine pendant 2 semaines",
-  },
+  // Ajoutez plus de programmes ici
 ];
-export const createProgram = (program: TrainingProgram) => {
+
+export const getPrograms = (): TrainingProgram[] => programs;
+
+export const addProgram = (program: TrainingProgram): void => {
   programs.push(program);
-  // Enregistrez les données dans un stockage persistant si nécessaire
 };
 
-export const updateProgram = (updatedProgram: TrainingProgram) => {
-  programs = programs.map((program) =>
-    program.id === updatedProgram.id ? updatedProgram : program
-  );
-  // Enregistrez les données dans un stockage persistant si nécessaire
+export const updateProgram = (
+  programId: number,
+  updatedProgram: TrainingProgram
+): void => {
+  programs = programs.map((p) => (p.id === programId ? updatedProgram : p));
 };
 
-export const deleteProgram = (programId: number) => {
-  programs = programs.filter((program) => program.id !== programId);
-  // Enregistrez les données dans un stockage persistant si nécessaire
+export const deleteProgram = (programId: number): void => {
+  programs = programs.filter((p) => p.id !== programId);
+};
+
+export const getProgramById = (
+  programId: number
+): TrainingProgram | undefined => {
+  return programs.find((p) => p.id === programId);
+};
+
+export const duplicateCycle = (
+  cycle: any,
+  type: "macrocycle" | "mesocycle" | "microcycle"
+) => {
+  const newCycle = { ...cycle, id: Math.floor(Math.random() * 10000) };
+
+  // Réinitialiser le titre pour le nouveau cycle
+  newCycle.title = `${cycle.title} (Copie)`;
+
+  // Cloner les sessions dans le cycle
+  if (type === "microcycle") {
+    newCycle.sessions = cycle.sessions.map((session) => ({
+      ...session,
+      id: Math.floor(Math.random() * 10000),
+    }));
+  } else {
+    newCycle.microcycles = cycle.microcycles.map((microcycle) =>
+      duplicateCycle(microcycle, "microcycle")
+    );
+  }
+
+  return newCycle;
 };

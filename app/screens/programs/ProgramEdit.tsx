@@ -1,52 +1,67 @@
-// ProgramEdit.tsx
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
-import { useRoute } from "@react-navigation/native";
-import { programs } from "@/app/data/programs";
+import React, { useEffect, useState } from "react";
+import { View, Alert, ActivityIndicator, StyleSheet, Text } from "react-native";
+import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
+import ProgramForm from "@/app/screens/programs/ProgramForm"; // Assurez-vous que le chemin est correct
+import { programs, updateProgram } from "@/app/data/programs"; // Importer les fonctions nécessaires
 import { TrainingProgram } from "@/types/ProgramTypes";
 
-const ProgramEdit: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const route = useRoute();
-  const { programId } = route.params as { programId: number };
+type ProgramEditRouteProp = RouteProp<{
+  params: { programId: number };
+}>;
+
+const ProgramEdit: React.FC = () => {
+  const route = useRoute<ProgramEditRouteProp>();
+  const navigation = useNavigation();
+  const { programId } = route.params;
+
   const [program, setProgram] = useState<TrainingProgram | undefined>(
     undefined
   );
-  const [title, setTitle] = useState("");
-  const [recurrence, setRecurrence] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const programToEdit = programs.find((p) => p.id === programId);
-    if (programToEdit) {
-      setProgram(programToEdit);
-      setTitle(programToEdit.title);
-      setRecurrence(programToEdit.recurrence);
-    }
-  }, [programId]);
-
-  const handleSave = () => {
-    if (program) {
-      program.title = title;
-      program.recurrence = recurrence;
-      // Mettre à jour le programme dans vos données (à ajuster selon votre méthode de gestion de données)
+    const foundProgram = programs.find((p) => p.id === programId);
+    if (foundProgram) {
+      setProgram(foundProgram);
+      setLoading(false);
+    } else {
+      // Gérer le cas où le programme n'est pas trouvé
+      Alert.alert("Erreur", "Programme non trouvé");
       navigation.goBack();
     }
+  }, [programId, navigation]);
+
+  const handleSave = (programData: TrainingProgram) => {
+    if (programId) {
+      updateProgram({ ...programData, id: programId });
+      Alert.alert("Succès", "Programme mis à jour avec succès");
+    }
+    navigation.goBack();
   };
 
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   if (!program) {
-    return <Text>Programme non trouvé</Text>;
+    return (
+      <View style={styles.container}>
+        <Text>Programme non trouvé.</Text>
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Titre</Text>
-      <TextInput style={styles.input} value={title} onChangeText={setTitle} />
-      <Text style={styles.label}>Récurrence</Text>
-      <TextInput
-        style={styles.input}
-        value={recurrence}
-        onChangeText={setRecurrence}
+      <ProgramForm
+        program={program}
+        onSave={handleSave}
+        onCancel={() => navigation.goBack()}
       />
-      <Button title="Enregistrer" onPress={handleSave} />
     </View>
   );
 };
@@ -54,17 +69,9 @@ const ProgramEdit: React.FC<{ navigation: any }> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: "flex-start", // Contenu en haut
+    alignItems: "stretch", // Utiliser toute la largeur disponible
     padding: 16,
-  },
-  label: {
-    fontSize: 16,
-    marginVertical: 8,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 8,
-    marginBottom: 16,
   },
 });
 
